@@ -73,7 +73,7 @@ cd backend
 mvn spring-boot:run
 Backend bo tekel na:
 
-http://localhost:8080
+http://localhost:8080<br />
 2.3. Namestitev in zagon frontenda
 bash
 Kopiraj kodo
@@ -82,7 +82,7 @@ npm install
 npm start
 Frontend bo na naslovu:
 
-http://localhost:3000
+http://localhost:3000<br />
 3. Navodila za razvijalce (prispevanje)
 Fork-aj repozitorij na GitHubu
 
