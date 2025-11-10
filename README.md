@@ -58,6 +58,7 @@ Pred zagonom potrebujete:
 V MySQL zaženite:
 
 ```sql
+```
 CREATE DATABASE todo_app;
 Nato v backend/src/main/resources/application.properties nastavite:
 
