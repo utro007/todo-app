@@ -68,13 +68,13 @@ spring.datasource.username=VAŠ_UPORABNIK
 spring.datasource.password=VAŠE_GESLO
 spring.jpa.hibernate.ddl-auto=update
 
-2.2. Zagon backend strežnika
+### 2.2. Zagon backend strežnika
 cd backend
 mvn spring-boot:run
 Backend bo tekel na:
 
 http://localhost:8080<br />
-2.3. Namestitev in zagon frontenda
+### 2.3. Namestitev in zagon frontenda
 bash
 Kopiraj kodo
 cd ../frontend
@@ -83,7 +83,7 @@ npm start
 Frontend bo na naslovu:
 
 http://localhost:3000<br />
-3. Navodila za razvijalce (prispevanje)
+## 3. Navodila za razvijalce (prispevanje)
 Fork-aj repozitorij na GitHubu
 
 Ustvari novo vejo:
@@ -104,14 +104,14 @@ Pred PR preveri, da sistem teče brez napak.
 
 Koda naj bo berljiva in strukturirana.
 
-4. API (osnovni endpoints)
+## 4. API (osnovni endpoints)
 Metoda	Endpoint	Opis
 GET	/api/todos	Pridobi vsa opravila
 POST	/api/todos	Dodaj novo opravilo
 PUT	/api/todos/{id}	Posodobi določeno opravilo
 DELETE	/api/todos/{id}	Odstrani opravilo
 
-5. Vizija projekta
+## 5. Vizija projekta
 
 Vizija projekta Todo aplikacije je uporabnikom omogočiti enostavno, pregledno in učinkovito upravljanje njihovih nalog v vsakodnevnem življenju. Aplikacija omogoča ustvarjanje, urejanje, pregledovanje, filtriranje in dokončanje nalog na intuitiven in odziven način.
 Cilj aplikacije je izboljšati organizacijo in produktivnost uporabnika tako, da mu pomaga ohranjati pregled nad obveznostmi ter zmanjšati stres, ki nastane zaradi pozabljanja nalog. Aplikacija je zasnovana tako, da je preprosta za uporabo, vizualno prijetna in dostopna na različnih napravah.
@@ -121,7 +121,7 @@ Aplikacija je namenjena:<br />
  - posameznikom, ki želijo strukturirati vsakodnevna opravila.<br />
 S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnost na preprost in jasen način.
 
-6. Besednjak
+## 6. Besednjak
 | Izraz                 | Pomen                                                                                    |
 | --------------------- | ---------------------------------------------------------------------------------------- |
 | **Todo**              | Posamezna naloga ali opravilo, ki ga uporabnik želi spremljati.                          |
@@ -135,7 +135,7 @@ S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnos
 | **Backend**           | Strežniški del aplikacije, ki upravlja podatke in poslovno logiko.                       |
 | **Frontend**          | Uporabniški del aplikacije, kjer uporabnik vidi in uporablja aplikacijo.                 |
 
-7.DPU
+## 7.DPU
 ---
 title: Diagram primerov uporabe - Todo Aplikacija
 ---
