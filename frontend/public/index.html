@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1><i class="fas fa-tasks"></i> Moja Todo Aplikacija</h1>
+        <p>Organiziraj svoje naloge enostavno in učinkovito</p>
+    </header>
+
+    <!-- Add Todo Form -->
+    <div class="todo-form-container">
+        <form class="todo-form" id="todoForm">
+            <div class="form-group">
+                <input
+                        type="text"
+                        id="todoTitle"
+                        placeholder="Vnesite naslov naloge..."
+                        required
+                        maxlength="100"
+                >
+                <div class="char-count" id="titleCharCount">0/100</div>
+            </div>
+
+            <div class="form-group">
+                    <textarea
+                            id="todoDescription"
+                            placeholder="Vnesite opis naloge (neobvezno)..."
+                            rows="3"
+                            maxlength="500"
+                    ></textarea>
+                <div class="char-count" id="descCharCount">0/500</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-plus"></i> Dodaj nalogo
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;">
+                    <i class="fas fa-times"></i> Prekliči
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filters and Search -->
+
+    <div class="controls">
+        <div class="search-container">
+            <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Išči po naslovu..."
+                    class="search-input"
+            >
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-list"></i> Vse
+            </button>
+            <button class="filter-btn" data-filter="active">
+                <i class="fas fa-clock"></i> Aktivne
+            </button>
+            <button class="filter-btn" data-filter="completed">
+                <i class="fas fa-check"></i> Opravljene
+            </button>
+        </div>
+
+        <div class="stats">
+            <span id="todoStats">Nalagam...</span>
+        </div>
+    </div>
+
+    <!-- Loading and Error Messages -->
+    <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Nalagam naloge...
+    </div>
+
+    <div id="error" class="error-message" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="errorText"></span>
+        <button onclick="hideError()" class="error-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Todos List -->
+    <div class="todos-container">
+        <div id="todosList" class="todos-list"></div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-clipboard-list"></i>
+            <h3>Ni nalog</h3>
+            <p>Dodajte svojo prvo nalogo z zgornjim obrazcem</p>
+        </div>
+
+        <div id="noResults" class="empty-state" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>Ni rezultatov</h3>
+            <p>Nobena naloga ne ustreza iskalnemu kriteriju</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Todo App &copy; 2025 | Aljaž Utroša</p>
+    </footer>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3><i class="fas fa-exclamation-triangle"></i> Potrditev brisanja</h3>
+        <p>Ali ste prepričani, da želite izbrisati to nalogo?</p>
+        <div class="modal-actions">
+            <button class="btn btn-danger" id="confirmDeleteBtn">
+                <i class="fas fa-trash"></i> Izbriši
+            </button>
+            <button class="btn btn-secondary" id="cancelDeleteBtn">
+                <i class="fas fa-times"></i> Prekliči
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
