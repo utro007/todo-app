@@ -110,3 +110,52 @@ GET	/api/todos	Pridobi vsa opravila
 POST	/api/todos	Dodaj novo opravilo
 PUT	/api/todos/{id}	Posodobi določeno opravilo
 DELETE	/api/todos/{id}	Odstrani opravilo
+
+5. Vizija projekta
+
+Vizija projekta Todo aplikacije je uporabnikom omogočiti enostavno, pregledno in učinkovito upravljanje njihovih nalog v vsakodnevnem življenju. Aplikacija omogoča ustvarjanje, urejanje, pregledovanje, filtriranje in dokončanje nalog na intuitiven in odziven način.
+Cilj aplikacije je izboljšati organizacijo in produktivnost uporabnika tako, da mu pomaga ohranjati pregled nad obveznostmi ter zmanjšati stres, ki nastane zaradi pozabljanja nalog. Aplikacija je zasnovana tako, da je preprosta za uporabo, vizualno prijetna in dostopna na različnih napravah.
+Aplikacija je namenjena:<br />
+ - študentom, ki želijo spremljati šolske obveznosti,<br />
+ - zaposlenim, ki želijo organizirati delovne naloge,<br />
+ - posameznikom, ki želijo strukturirati vsakodnevna opravila.<br />
+S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnost na preprost in jasen način.
+
+6. Besednjak
+| Izraz                 | Pomen                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| **Todo**              | Posamezna naloga ali opravilo, ki ga uporabnik želi spremljati.                          |
+| **Seznam nalog**      | Prikaz vseh nalog, ki jih je uporabnik ustvaril.                                         |
+| **Aktivna naloga**    | Naloga, ki še ni bila označena kot opravljena.                                           |
+| **Opravljena naloga** | Naloga, ki jo je uporabnik označil kot končano.                                          |
+| **Opis naloge**       | Dodatni opis, komentar ali opomba, povezana z nalogo.                                    |
+| **Status naloge**     | Lastnost, ki označuje ali je naloga dokončana ali ne.                                    |
+| **Filtriranje**       | Funkcionalnost, ki omogoča prikaz samo določenega tipa nalog (npr. opravljene, aktivne). |
+| **API**               | Vmesnik med frontendom in backendom za izmenjavo podatkov.                               |
+| **Backend**           | Strežniški del aplikacije, ki upravlja podatke in poslovno logiko.                       |
+| **Frontend**          | Uporabniški del aplikacije, kjer uporabnik vidi in uporablja aplikacijo.                 |
+
+7.DPU
+---
+title: Diagram primerov uporabe - Todo Aplikacija
+---
+
+usecaseDiagram
+
+actor Uporabnik
+actor Administrator
+
+Uporabnik --> (Ustvari nalogo)
+Uporabnik --> (Uredi nalogo)
+Uporabnik --> (Izbriši nalogo)
+Uporabnik --> (Označi kot opravljeno)
+Uporabnik --> (Prikaži seznam nalog)
+Uporabnik --> (Išči naloge)
+Uporabnik --> (Filtriraj naloge)
+
+Administrator --> (Upravljaj vse naloge)
+Administrator --> (Odstrani vse opravljene naloge)
+
+(Uredi nalogo) ..> (Prikaži podrobnosti naloge) : <<include>>
+(Označi kot opravljeno) ..> (Pošlji obvestilo uporabniku) : <<extend>>
+
