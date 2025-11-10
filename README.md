@@ -10,20 +10,20 @@ Aplikacija omogoča ustvarjanje, urejanje, označevanje dokončanih opravil ter 
 
 ### Projektna struktura
 
-todo-app/
-│
-├─ backend/ # Spring Boot REST API
-│ ├─ src/main/java/... # Kontrolerji, servisi, modeli, repozitoriji
-│ ├─ src/main/resources/ # application.properties (povezava na MySQL)
-│ └─ pom.xml # Maven odvisnosti in konfiguracija
-│
-├─ frontend/ # Node.js + Express strežnik
-│ ├─ public/ # Statične datoteke (HTML, CSS, JS)
-│ ├─ views/ # EJS predloge (če uporabljene)
-│ ├─ package.json # Node odvisnosti
-│ └─ server.js # Vstopna točka frontenda
-│
-└─ docker-compose.yml # (Opcijsko) Docker orkestracija
+todo-app/<br />
+│<br />
+├─ backend/ # Spring Boot REST API<br />
+│ ├─ src/main/java/... # Kontrolerji, servisi, modeli, repozitoriji<br />
+│ ├─ src/main/resources/ # application.properties (povezava na MySQL)<br />
+│ └─ pom.xml # Maven odvisnosti in konfiguracija<br />
+│<br />
+├─ frontend/ # Node.js + Express strežnik<br />
+│ ├─ public/ # Statične datoteke (HTML, CSS, JS)<br />
+│ ├─ views/ # EJS predloge (če uporabljene)<br />
+│ ├─ package.json # Node odvisnosti<br />
+│ └─ server.js # Vstopna točka frontenda<br />
+│<br />
+└─ docker-compose.yml # (Opcijsko) Docker orkestracija<br />
 
 ### Tehnologije in verzije
 
