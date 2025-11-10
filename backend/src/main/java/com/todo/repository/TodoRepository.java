@@ -7,20 +7,39 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repository sloj (DAO), ki omogoča dostop do podatkovne baze.
+ * Razširja JpaRepository, ki vsebuje standardne CRUD metode (findAll, save, deleteById, ...).
+ *
+ * Spring Data JPA samodejno generira poizvedbe na podlagi imen metod ("query by method name").
+ */
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
-    // Custom query to find all completed todos
+    /**
+     * Vrne vse naloge, ki imajo status completed = true.
+     * Spring samodejno generira SQL: SELECT * FROM todos WHERE completed = true
+     */
     List<Todo> findByCompletedTrue();
 
-    // Custom query to find all incomplete todos
+    /**
+     * Vrne vse naloge, ki so aktivne (completed = false).
+     */
     List<Todo> findByCompletedFalse();
 
-    // Custom query to find todos by title containing keyword
+    /**
+     * Iskanje nalog po naslovu (case-insensitive).
+     * Uporablja LIKE poizvedbo: WHERE LOWER(title) LIKE LOWER('%keyword%')
+     */
     List<Todo> findByTitleContainingIgnoreCase(String keyword);
 
-    // Native query example
-    @Query(value = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER(CONCAT('%', :keyword, '%'))",
-            nativeQuery = true)
+    /**
+     * Alternativno ročno definirana SQL poizvedba (nativeQuery).
+     * Isto kot metoda zgoraj, vendar napisana eksplicitno za večjo prilagodljivost.
+     */
+    @Query(
+            value = "SELECT * FROM todos WHERE LOWER(title) LIKE LOWER(CONCAT('%', :keyword, '%'))",
+            nativeQuery = true
+    )
     List<Todo> searchByTitle(String keyword);
 }

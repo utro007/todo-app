@@ -1,10 +1,14 @@
-// Global state
-let todos = [];
-let editingId = null;
-let currentFilter = 'all';
-let deleteTodoId = null;
+// -----------------------
+// Globalno stanje aplikacije
+// -----------------------
+let todos = [];              // Seznam vseh nalog pridobljenih iz API-ja
+let editingId = null;        // ID naloge, ki jo trenutno urejamo (null = dodajanje nove)
+let currentFilter = 'all';   // Trenutni filter prikaza ('all', 'active', 'completed')
+let deleteTodoId = null;     // ID naloge, ki je označena za brisanje (pred potrditvijo)
 
-// DOM elements
+// -----------------------
+// Pridobivanje referenc na DOM elemente
+// -----------------------
 const todoForm = document.getElementById('todoForm');
 const todoTitle = document.getElementById('todoTitle');
 const todoDescription = document.getElementById('todoDescription');
@@ -25,22 +29,23 @@ const deleteModal = document.getElementById('deleteModal');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
-// API
+// -----------------------
+// Osnova API-ja
+// -----------------------
 const API_BASE = '/api/todos';
 
+/**
+ * Splošna funkcija za klic API-ja.
+ * Ovdje centraliziramo obravnavo napak in standardne nastavitve.
+ */
 async function apiCall(endpoint, options = {}) {
     try {
         const response = await fetch(endpoint, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
+            headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         return await response.json();
     } catch (error) {
@@ -49,12 +54,13 @@ async function apiCall(endpoint, options = {}) {
     }
 }
 
-// Load all todos
+// -----------------------
+// Nalaganje podatkov iz API-ja
+// -----------------------
 async function loadTodos() {
     try {
         showLoading();
         hideError();
-
         todos = await apiCall(API_BASE);
         displayTodos();
         updateStats();
@@ -63,15 +69,21 @@ async function loadTodos() {
     }
 }
 
-// Display todos based on current filter and search
+// -----------------------
+// Prikaz nalog glede na filter in iskalni niz
+// -----------------------
 function displayTodos() {
     hideLoading();
 
     const searchTerm = searchInput.value.toLowerCase();
-    let filteredTodos = todos.filter(todo => {
-        const matchesSearch = todo.title.toLowerCase().includes(searchTerm) ||
+
+    const filteredTodos = todos.filter(todo => {
+        const matchesSearch =
+            todo.title.toLowerCase().includes(searchTerm) ||
             (todo.description && todo.description.toLowerCase().includes(searchTerm));
-        const matchesFilter = currentFilter === 'all' ||
+
+        const matchesFilter =
+            currentFilter === 'all' ||
             (currentFilter === 'active' && !todo.completed) ||
             (currentFilter === 'completed' && todo.completed);
 
@@ -79,34 +91,28 @@ function displayTodos() {
     });
 
     if (filteredTodos.length === 0) {
-        if (todos.length === 0) {
-            showEmptyState();
-        } else {
-            showNoResults();
-        }
+        todos.length === 0 ? showEmptyState() : showNoResults();
         return;
     }
 
     hideEmptyStates();
 
+    // Generiranje HTML-ja za prikaz nalog
     todosList.innerHTML = filteredTodos.map(todo => `
         <div class="todo-item ${todo.completed ? 'completed' : ''}" id="todo-${todo.id}">
             <div class="todo-checkbox">
-                <input 
-                    type="checkbox" 
-                    ${todo.completed ? 'checked' : ''}
-                    onchange="toggleTodo(${todo.id})"
-                >
+                <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
             </div>
+
             <div class="todo-content">
                 <div class="todo-title">${escapeHtml(todo.title)}</div>
                 ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
                 <div class="todo-meta">
                     <span>Ustvarjeno: ${formatDate(todo.createdAt)}</span>
-                    ${todo.updatedAt !== todo.createdAt ?
-        `<span>Posodobljeno: ${formatDate(todo.updatedAt)}</span>` : ''}
+                    ${todo.updatedAt !== todo.createdAt ? `<span>Posodobljeno: ${formatDate(todo.updatedAt)}</span>` : ''}
                 </div>
             </div>
+
             <div class="todo-actions">
                 <button class="btn btn-warning" onclick="editTodo(${todo.id})" ${todo.completed ? 'disabled' : ''}>
                     <i class="fas fa-edit"></i>
@@ -119,7 +125,9 @@ function displayTodos() {
     `).join('');
 }
 
-// Add or update todo
+// -----------------------
+// Obdelava oddaje obrazca (dodajanje ali posodabljanje naloge)
+// -----------------------
 async function handleSubmit(event) {
     event.preventDefault();
 
@@ -136,7 +144,7 @@ async function handleSubmit(event) {
         hideError();
 
         if (editingId) {
-            // Update existing todo
+            // Posodobitev obstoječe naloge
             await apiCall(`${API_BASE}/${editingId}`, {
                 method: 'PUT',
                 body: JSON.stringify({
@@ -146,14 +154,10 @@ async function handleSubmit(event) {
                 })
             });
         } else {
-            // Create new todo
+            // Ustvarjanje nove naloge
             await apiCall(API_BASE, {
                 method: 'POST',
-                body: JSON.stringify({
-                    title,
-                    description,
-                    completed: false
-                })
+                body: JSON.stringify({ title, description, completed: false })
             });
         }
 
@@ -164,19 +168,21 @@ async function handleSubmit(event) {
     }
 }
 
-// Toggle todo completion
+// -----------------------
+// Preklop stanja (opravljeno / aktivno)
+// -----------------------
 async function toggleTodo(id) {
     try {
-        await apiCall(`${API_BASE}/${id}/toggle`, {
-            method: 'PATCH'
-        });
+        await apiCall(`${API_BASE}/${id}/toggle`, { method: 'PATCH' });
         await loadTodos();
     } catch (error) {
         showError('Napaka pri posodabljanju naloge: ' + error.message);
     }
 }
 
-// Edit todo
+// -----------------------
+// Urejanje naloge
+// -----------------------
 function editTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
@@ -187,16 +193,15 @@ function editTodo(id) {
     submitBtn.innerHTML = '<i class="fas fa-save"></i> Shrani spremembe';
     cancelEditBtn.style.display = 'flex';
     todoTitle.focus();
-
     updateCharCounts();
 }
 
-// Cancel editing
+// Preklic urejanja
 function cancelEdit() {
     resetForm();
 }
 
-// Reset form
+// Ponastavitev obrazca v začetno stanje
 function resetForm() {
     editingId = null;
     todoForm.reset();
@@ -205,7 +210,9 @@ function resetForm() {
     updateCharCounts();
 }
 
-// Delete todo with confirmation
+// -----------------------
+// Brisanje z modalnim potrjevanjem
+// -----------------------
 function showDeleteModal(id) {
     deleteTodoId = id;
     deleteModal.style.display = 'flex';
@@ -215,9 +222,7 @@ async function confirmDelete() {
     if (!deleteTodoId) return;
 
     try {
-        await apiCall(`${API_BASE}/${deleteTodoId}`, {
-            method: 'DELETE'
-        });
+        await apiCall(`${API_BASE}/${deleteTodoId}`, { method: 'DELETE' });
         hideDeleteModal();
         await loadTodos();
     } catch (error) {
@@ -231,28 +236,23 @@ function hideDeleteModal() {
     deleteTodoId = null;
 }
 
-// Filter todos
+// -----------------------
+// Filtriranje in iskanje
+// -----------------------
 function setFilter(filter) {
     currentFilter = filter;
-
-    // Update active filter button
-    filterButtons.forEach(btn => {
-        if (btn.dataset.filter === filter) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
+    filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
     displayTodos();
 }
 
-// Search todos
+// Iskanje po naslovu/opisu
 function handleSearch() {
     displayTodos();
 }
 
-// Update statistics
+// -----------------------
+// Statistika nalog
+// -----------------------
 function updateStats() {
     const total = todos.length;
     const completed = todos.filter(t => t.completed).length;
@@ -261,16 +261,19 @@ function updateStats() {
     todoStats.textContent = `${active} aktivnih, ${completed} opravljenih, ${total} skupaj`;
 }
 
-// Character count
+// -----------------------
+// Spremljanje dolžine vnosa
+// -----------------------
 function updateCharCounts() {
     titleCharCount.textContent = `${todoTitle.value.length}/100`;
     descCharCount.textContent = `${todoDescription.value.length}/500`;
 }
 
-// Utility functions
+// -----------------------
+// Pomožne funkcije
+// -----------------------
 function escapeHtml(unsafe) {
-    return unsafe
-        .replace(/&/g, "&amp;")
+    return unsafe.replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
@@ -282,97 +285,47 @@ function formatDate(dateString) {
     return date.toLocaleDateString('sl-SI') + ' ' + date.toLocaleTimeString('sl-SI');
 }
 
-// UI state functions
-function showLoading() {
-    loading.style.display = 'block';
-    todosList.innerHTML = '';
-    hideEmptyStates();
-}
+// -----------------------
+// UI nadzor prikaza
+// -----------------------
+function showLoading() { loading.style.display = 'block'; todosList.innerHTML = ''; hideEmptyStates(); }
+function hideLoading() { loading.style.display = 'none'; }
+function showError(msg) { errorText.textContent = msg; error.style.display = 'flex'; }
+function hideError() { error.style.display = 'none'; }
+function showEmptyState() { emptyState.style.display = 'block'; noResults.style.display = 'none'; todosList.innerHTML = ''; }
+function showNoResults() { noResults.style.display = 'block'; emptyState.style.display = 'none'; todosList.innerHTML = ''; }
+function hideEmptyStates() { emptyState.style.display = 'none'; noResults.style.display = 'none'; }
 
-function hideLoading() {
-    loading.style.display = 'none';
-}
-
-function showError(message) {
-    errorText.textContent = message;
-    error.style.display = 'flex';
-}
-
-function hideError() {
-    error.style.display = 'none';
-}
-
-function showEmptyState() {
-    emptyState.style.display = 'block';
-    noResults.style.display = 'none';
-    todosList.innerHTML = '';
-}
-
-function showNoResults() {
-    noResults.style.display = 'block';
-    emptyState.style.display = 'none';
-    todosList.innerHTML = '';
-}
-
-function hideEmptyStates() {
-    emptyState.style.display = 'none';
-    noResults.style.display = 'none';
-}
-
-// Event listeners
+// -----------------------
+// Dogodki
+// -----------------------
 document.addEventListener('DOMContentLoaded', function() {
-    // Load initial data
     loadTodos();
-
-    // Form submission
     todoForm.addEventListener('submit', handleSubmit);
-
-    // Cancel edit
     cancelEditBtn.addEventListener('click', cancelEdit);
-
-    // Search
     searchInput.addEventListener('input', handleSearch);
-
-    // Filters
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => setFilter(btn.dataset.filter));
-    });
-
-    // Character counts
+    filterButtons.forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter)));
     todoTitle.addEventListener('input', updateCharCounts);
     todoDescription.addEventListener('input', updateCharCounts);
-
-    // Delete modal
     confirmDeleteBtn.addEventListener('click', confirmDelete);
     cancelDeleteBtn.addEventListener('click', hideDeleteModal);
 
-    // Close modal on outside click
-    deleteModal.addEventListener('click', function(event) {
-        if (event.target === deleteModal) {
-            hideDeleteModal();
-        }
-    });
+    deleteModal.addEventListener('click', e => { if (e.target === deleteModal) hideDeleteModal(); });
 
-    // Close error message
-    window.hideError = hideError;
-
-    // Initial character count
+    window.hideError = hideError; // omogoča zapiranje napak iz HTML-ja
     updateCharCounts();
 });
 
-// Keyboard shortcuts
+// -----------------------
+// Bližnjice na tipkovnici
+// -----------------------
 document.addEventListener('keydown', function(event) {
-    // Escape key cancels edit or closes modal
     if (event.key === 'Escape') {
-        if (editingId) {
-            cancelEdit();
-        }
-        if (deleteModal.style.display === 'flex') {
-            hideDeleteModal();
-        }
+        if (editingId) cancelEdit();
+        if (deleteModal.style.display === 'flex') hideDeleteModal();
     }
 
-    // Ctrl+K or Cmd+K focuses search
+    // Ctrl+K / Cmd+K → fokus na iskanje
     if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
         event.preventDefault();
         searchInput.focus();

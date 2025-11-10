@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler, ki izpostavlja API za upravljanje Todo nalog.
+ * Zadolžen je za prejem HTTP zahtev in delegiranje logike na storitveno (service) plast.
+ */
 @RestController
 @RequestMapping("/api/todos")
 @CrossOrigin(origins = {"http://localhost:3000", "http://frontend:3000"})
@@ -19,7 +23,9 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
-    // GET all todos
+    /**
+     * Vrne seznam vseh nalog.
+     */
     @GetMapping
     public ResponseEntity<List<Todo>> getAllTodos() {
         try {
@@ -30,7 +36,10 @@ public class TodoController {
         }
     }
 
-    // GET todo by ID
+    /**
+     * Vrne posamezno nalogo po ID.
+     * Če naloga ne obstaja → vrne 404 Not Found.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
         try {
@@ -42,11 +51,14 @@ public class TodoController {
         }
     }
 
-    // CREATE new todo
+    /**
+     * Ustvari novo nalogo.
+     * @Valid poskrbi za validacijo podatkov v modelu (npr. @NotBlank).
+     * ID mora biti null → generira ga baza.
+     */
     @PostMapping
     public ResponseEntity<Todo> createTodo(@Valid @RequestBody Todo todo) {
         try {
-            // Ensure ID is null for new entity
             todo.setId(null);
             Todo createdTodo = todoService.createTodo(todo);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
@@ -55,7 +67,10 @@ public class TodoController {
         }
     }
 
-    // UPDATE todo
+    /**
+     * Posodobi obstoječo nalogo.
+     * Če naloga ne obstaja → vrne 404.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @Valid @RequestBody Todo todoDetails) {
         try {
@@ -70,13 +85,16 @@ public class TodoController {
         }
     }
 
-    // DELETE todo
+    /**
+     * Izbriše nalogo po ID.
+     * Če naloga ne obstaja → vrne 404.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
         try {
             boolean deleted = todoService.deleteTodo(id);
             if (deleted) {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.noContent().build(); // 204 No Content
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -85,7 +103,9 @@ public class TodoController {
         }
     }
 
-    // GET completed todos
+    /**
+     * Vrne vse opravljene naloge.
+     */
     @GetMapping("/completed")
     public ResponseEntity<List<Todo>> getCompletedTodos() {
         try {
@@ -96,7 +116,9 @@ public class TodoController {
         }
     }
 
-    // GET incomplete todos
+    /**
+     * Vrne vse neopravljene naloge.
+     */
     @GetMapping("/incomplete")
     public ResponseEntity<List<Todo>> getIncompleteTodos() {
         try {
@@ -107,7 +129,9 @@ public class TodoController {
         }
     }
 
-    // SEARCH todos
+    /**
+     * Iskanje nalog po ključni besedi (v naslovu ali opisu).
+     */
     @GetMapping("/search")
     public ResponseEntity<List<Todo>> searchTodos(@RequestParam String keyword) {
         try {
@@ -118,7 +142,10 @@ public class TodoController {
         }
     }
 
-    // TOGGLE todo completion status
+    /**
+     * Preklopi stanje naloge (opravljena ↔ neopravljena).
+     * Če naloga ne obstaja → vrne 404.
+     */
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<Todo> toggleTodoCompletion(@PathVariable Long id) {
         try {

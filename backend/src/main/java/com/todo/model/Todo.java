@@ -4,35 +4,61 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
+/**
+ * Entiteta, ki predstavlja posamezno "Todo" nalogo v podatkovni bazi.
+ * Razred je povezan s tabelo 'todos' in se uporablja v JPA/Hibernate ORM preslikavi.
+ */
 @Entity
 @Table(name = "todos")
 public class Todo {
 
+    /**
+     * Primarni ključ (avtomatsko generiran s pomočjo AUTO_INCREMENT / SERIAL).
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Naslov naloge je obvezen.
+     * @NotBlank zagotovi validacijo na nivoju API-ja.
+     */
     @NotBlank(message = "Title is mandatory")
     @Column(nullable = false)
     private String title;
 
+    /**
+     * Opcijski opis naloge.
+     * TEXT definicija omogoča shranjevanje daljših opisov.
+     */
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /**
+     * Status naloge: true = dokončana, false = aktivna.
+     */
     @Column(nullable = false)
     private Boolean completed = false;
 
+    /**
+     * Datum ustvarjanja (nastavi se samodejno ob prvem shranjevanju).
+     */
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * Datum zadnje posodobitve (posodobi se ob vsaki spremembi entitete).
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Default constructor
+    // --------------------------------------------------
+    // Konstruktorji
+    // --------------------------------------------------
+
     public Todo() {
     }
 
-    // Constructor with parameters
     public Todo(String title, String description) {
         this.title = title;
         this.description = description;
@@ -41,20 +67,32 @@ public class Todo {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Pre-persist callback
+    // --------------------------------------------------
+    // Lifecycle callback metode (JPA Hooks)
+    // --------------------------------------------------
+
+    /**
+     * Klicano samodejno pred INSERT operacijo (prvo shranjevanje entitete).
+     */
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Pre-update callback
+    /**
+     * Klicano samodejno pred UPDATE operacijo.
+     */
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
+    // --------------------------------------------------
+    // Getterji in Setterji
+    // (Setterji posodabljajo updatedAt, da spremljamo spremembe)
+    // --------------------------------------------------
+
     public Long getId() {
         return id;
     }
@@ -94,6 +132,7 @@ public class Todo {
         return createdAt;
     }
 
+    // CreatedAt navadno ne spreminjamo ročno, zato setter ostane neuporabljen
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -106,6 +145,9 @@ public class Todo {
         this.updatedAt = updatedAt;
     }
 
+    // --------------------------------------------------
+    // Debug izpis (uporaben pri logiranju)
+    // --------------------------------------------------
     @Override
     public String toString() {
         return "Todo{" +

@@ -1,27 +1,31 @@
+# Osnovna slika Node.js (alpine = majhna in optimizirana za produkcijo)
 FROM node:18-alpine
 
-# Set working directory
+# Nastavimo delovno mapo znotraj kontejnerja
 WORKDIR /app
 
-# Copy package files
+# Kopiramo package.json in lockfile (če obstaja)
+# To omogoča hitrejše cache-iranje npm install koraka
 COPY package*.json ./
 
-# Install dependencies
+# Namestimo samo produkcijske odvisnosti (brez devDependencies)
 RUN npm install --production
 
-# Copy source code
+# Kopiramo preostalo projektno kodo
 COPY . .
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+# Ustvarimo ne-privilegiranega uporabnika (bolj varno kot root)
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S nextjs -u 1001
 
-# Change ownership
+# Nastavimo lastništvo datotek za novega uporabnika
 RUN chown -R nextjs:nodejs /app
+
+# Preklopimo na ne-root uporabnika
 USER nextjs
 
-# Expose port
+# Kontejner bo izpostavil aplikacijo na port 3000
 EXPOSE 3000
 
-# Start application
+# Privzeti ukaz za zagon aplikacije
 CMD ["npm", "start"]
