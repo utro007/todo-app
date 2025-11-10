@@ -136,11 +136,9 @@ S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnos
 | **Frontend**          | Uporabniški del aplikacije, kjer uporabnik vidi in uporablja aplikacijo.                 |
 
 ## 7.DPU
----
-title: Diagram primerov uporabe - Todo Aplikacija
----
-
+```mermaid
 usecaseDiagram
+title Diagram primerov uporabe - Todo Aplikacija
 
 actor Uporabnik
 actor Administrator
@@ -156,6 +154,6 @@ Uporabnik --> (Filtriraj naloge)
 Administrator --> (Upravljaj vse naloge)
 Administrator --> (Odstrani vse opravljene naloge)
 
-(Uredi nalogo) ..> (Prikaži podrobnosti naloge) : <<include>>
-(Označi kot opravljeno) ..> (Pošlji obvestilo uporabniku) : <<extend>>
-
+(Uredi nalogo) --> (Prikaži podrobnosti naloge) : <<include>>
+(Označi kot opravljeno) --> (Pošlji obvestilo uporabniku) : <<extend>>
+```
