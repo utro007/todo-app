@@ -175,11 +175,11 @@ graph TD
     %% Extend relationship
     B6 -.-> B10
     
-    %% Styling
-    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef useCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef include fill:#fff,stroke:#666,stroke-dasharray: 5 5
-    classDef extend fill:#fff,stroke:#666,stroke-dasharray: 5 5
+    %% Styling - improved colors for better readability
+    classDef actor fill:#2E7D32,stroke:#1B5E20,stroke-width:2px,color:#ffffff
+    classDef useCase fill:#1565C0,stroke:#0D47A1,stroke-width:2px,color:#ffffff
+    classDef include fill:#fff,stroke:#666,stroke-dasharray: 5 5,color:#000000
+    classDef extend fill:#fff,stroke:#666,stroke-dasharray: 5 5,color:#000000
     
     class A1,A2 actor
     class B1,B2,B3,B4,B5,B6,B7,B8,B9,B10 useCase
