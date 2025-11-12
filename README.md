@@ -138,36 +138,51 @@ S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnos
 ## 7.DPU
 
 ```mermaid
-useCaseDiagram
-    actor Uporabnik
-    actor Gost
+graph TD
+    %% Actors
+    A1[Uporabnik]
+    A2[Gost]
     
-    note "Sistem: Todo aplikacija" as SystemNote
+    %% Use Cases
+    B1[Dodaj opravilo]
+    B2[Uredi opravilo]
+    B3[Izbriši opravilo]
+    B4[Označi kot dokončano]
+    B5[Označi kot nedokončano]
+    B6[Filtriraj opravila]
+    B7[Prikaži vse opravila]
+    B8[Išči opravila]
+    B9[Validiraj vnos]
+    B10[Napredno filtriranje]
     
-    Uporabnik --> (Dodaj opravilo)
-    Uporabnik --> (Uredi opravilo)
-    Uporabnik --> (Izbriši opravilo)
-    Uporabnik --> (Označi kot dokončano)
-    Uporabnik --> (Označi kot nedokončano)
-    Uporabnik --> (Filtriraj opravila)
-    Uporabnik --> (Prikaži vse opravila)
-    Uporabnik --> (Išči opravila)
+    %% Relationships
+    A1 --> B1
+    A1 --> B2
+    A1 --> B3
+    A1 --> B4
+    A1 --> B5
+    A1 --> B6
+    A1 --> B7
+    A1 --> B8
     
-    Gost --> (Dodaj opravilo)
-    Gost --> (Prikaži vse opravila)
+    A2 --> B1
+    A2 --> B7
     
-    (Dodaj opravilo) <.. (Validiraj vnos) : <<include>>
-    (Uredi opravilo) <.. (Validiraj vnos) : <<include>>
+    %% Include relationships
+    B1 -.-> B9
+    B2 -.-> B9
     
-    (Filtriraj opravila) <.. (Napredno filtriranje) : <<extend>>
+    %% Extend relationship
+    B6 -.-> B10
     
-    note right of (Dodaj opravilo)
-        Vključuje validacijo vnosa
-        za pravilno oblikovanje opravila
-    end note
+    %% Styling
+    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef useCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef include fill:#fff,stroke:#666,stroke-dasharray: 5 5
+    classDef extend fill:#fff,stroke:#666,stroke-dasharray: 5 5
     
-    note left of (Filtriraj opravila)
-        Lahko se razširi z naprednim
-        filtriranjem po datumu in statusu
-    end note
+    class A1,A2 actor
+    class B1,B2,B3,B4,B5,B6,B7,B8,B9,B10 useCase
+    linkStyle 8,9 stroke:#666,stroke-dasharray: 5 5
+    linkStyle 10 stroke:#666,stroke-dasharray: 5 5
 ```
