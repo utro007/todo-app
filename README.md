@@ -136,18 +136,21 @@ S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnos
 | **Frontend**          | Uporabniški del aplikacije, kjer uporabnik vidi in uporablja aplikacijo.                 |
 
 ## 7.DPU
+
+```mermaid
 graph TD
     A[Uporabnik odpre aplikacijo] --> B[Prikaz seznama opravil]
-    
     B --> C[Uporabnik izbere akcijo]
     C --> D[Dodaj opravilo]
     C --> E[Označi kot končano]
     C --> F[Uredi opravilo]
     C --> G[Izbriši opravilo]
     C --> H[Filtriraj opravila]
-    
     D --> B
     E --> B
     F --> B
+    G --> B
+    H --> B
+```
     G --> B
     H --> B
