@@ -138,19 +138,36 @@ S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnos
 ## 7.DPU
 
 ```mermaid
-graph TD
-    A[Uporabnik odpre aplikacijo] --> B[Prikaz seznama opravil]
-    B --> C[Uporabnik izbere akcijo]
-    C --> D[Dodaj opravilo]
-    C --> E[Označi kot končano]
-    C --> F[Uredi opravilo]
-    C --> G[Izbriši opravilo]
-    C --> H[Filtriraj opravila]
-    D --> B
-    E --> B
-    F --> B
-    G --> B
-    H --> B
-    G --> B
-    H --> B
+useCaseDiagram
+    actor Uporabnik
+    actor Gost
+    
+    note "Sistem: Todo aplikacija" as SystemNote
+    
+    Uporabnik --> (Dodaj opravilo)
+    Uporabnik --> (Uredi opravilo)
+    Uporabnik --> (Izbriši opravilo)
+    Uporabnik --> (Označi kot dokončano)
+    Uporabnik --> (Označi kot nedokončano)
+    Uporabnik --> (Filtriraj opravila)
+    Uporabnik --> (Prikaži vse opravila)
+    Uporabnik --> (Išči opravila)
+    
+    Gost --> (Dodaj opravilo)
+    Gost --> (Prikaži vse opravila)
+    
+    (Dodaj opravilo) <.. (Validiraj vnos) : <<include>>
+    (Uredi opravilo) <.. (Validiraj vnos) : <<include>>
+    
+    (Filtriraj opravila) <.. (Napredno filtriranje) : <<extend>>
+    
+    note right of (Dodaj opravilo)
+        Vključuje validacijo vnosa
+        za pravilno oblikovanje opravila
+    end note
+    
+    note left of (Filtriraj opravila)
+        Lahko se razširi z naprednim
+        filtriranjem po datumu in statusu
+    end note
 ```
