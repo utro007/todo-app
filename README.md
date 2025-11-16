@@ -152,7 +152,7 @@ graph TD
     B6[Filtriraj opravila]
     B7[Prikaži vse opravila]
     B8[Išči opravila]
-    B9[Validiraj vnos]
+    B9[Dodaj opis opravila]
     B10[Napredno filtriranje]
     
     %% Relationships
@@ -170,7 +170,6 @@ graph TD
     
     %% Include relationships
     B1 -.-> B9
-    B2 -.-> B9
     
     %% Extend relationship
     B6 -.-> B10
