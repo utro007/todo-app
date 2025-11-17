@@ -119,7 +119,7 @@ Aplikacija je namenjena:<br />
  - študentom, ki želijo spremljati šolske obveznosti,<br />
  - zaposlenim, ki želijo organizirati delovne naloge,<br />
  - posameznikom, ki želijo strukturirati vsakodnevna opravila.<br />
-S tem aplikacija podpira boljšo osebno organizacijo in izboljšuje produktivnost na preprost in jasen način.
+V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov, da lahko shranijo vsa opravila. Uporabniki bi lahko tudi shranili vsa opravila.
 
 ## 6. Besednjak
 | Izraz                 | Pomen                                                                                    |
