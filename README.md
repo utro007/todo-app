@@ -185,3 +185,421 @@ graph TD
     linkStyle 8,9 stroke:#666,stroke-dasharray: 5 5
     linkStyle 10 stroke:#666,stroke-dasharray: 5 5
 ```
+
+
+### 8. Podrobni opisi
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Dodaj opravilo</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 1</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Uporabnik želi ustvariti novo opravilo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Aplikacija je zagnana, uporabnik ima dostop do obrazca za dodajanje nalog.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: V bazo se doda novo opravilo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br>
+         1.Korak: Uporabnik klikne »Dodaj opravilo«.<br> 
+         2.Korak: Sistem prikaže obrazec.<br>
+         3.Korak: Uporabnik vnese naslov, rok, kategorijo ipd.<br>
+         4.Korak: Sistem preveri podatke.<br>
+         5.Korak: Sistem shrani opravilo.<br>
+         6.Korak: Sistem ponudi dodatne vključene korake: Dodaj opis opravila, Dodaj opravilo v koledar<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Neveljavni podatki → sistem vrne napako.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka v bazi → obvestilo.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Dodaj opis opravila</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 2</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Dodati podrobnejši opis opravila.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo je v postopku dodajanja ali urejanja.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Opis se zapiše k opravilu.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br>
+         1.Korak: Uporabnik vnese opis..<br> 
+         2.Korak: Sistem ga shrani.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Predolg opis → sistem vrne napako.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Prevelika dolžina opisa.</td>
+    </tr>
+</table>
+
+
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Dodaj opravilo v koledar</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 3</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Uporabnik želi, da se opravilo prikaže tudi v koledarju.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo ima določen rok.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: V koledarju se ustvari dogodek povezan z opravilo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Sistem preveri, ali je določen datum.<br>
+         2.Korak: Sistem ustvari koledarski dogodek.<br>
+         3.Korak: Dogodek se poveže z opravilom.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Uporabnik ne določi datuma → opozorilo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Dogodek se ne ustvari — sistem izpiše napako, opravilo pa kljub temu ostane ustvarjeno.</td>
+    </tr>
+</table>
+
+
+
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Uredi opravilo</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 4</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Spremeniti podatke obstoječega opravila.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo obstaja.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Podatki opravila se posodobijo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik klikne na opravilo.<br>
+         2.Korak: Sistem prikaže obrazec.<br>
+         3.Korak: Uporabnik spremeni podatke.<br>
+         4.Korak: Sistem jih preveri in shrani.<br>
+         5.Korak: Možnost označitve kot dokončano.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Urejeni podatki niso veljavni → opozorilo.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Neveljavni podatki → napaka. </td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Označi kot dokončano</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 5</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Označiti, da je naloga opravljena.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo obstaja in trenutno ni označeno kot dokončano.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Opravilo se označi kot dokončano.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik klikne na »Označi kot dokončano«.<br>
+         2.Korak: Sistem spremeni status opravila v dokončano.<br>
+         3.Korak: Sistem prikaže posodobljeni seznam opravil.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Opravilo je že dokončano → možnost se ne prikaže.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri shranjevanju statusa → opozorilo uporabniku.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Izbriši opravilo</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 6</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Uporabnik želi odstraniti opravilo iz sistema.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo obstaja in je prikazano uporabniku.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Opravilo je trajno izbrisano iz baze podatkov.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik klikne »Izbriši«.<br>
+         2.Korak: Sistem zahteva potrditev izbrisa.<br>
+         3.Korak: Uporabnik potrdi izbris.<br>
+         4.Korak: Sistem izbriše opravilo iz baze.<br>
+         5.Korak: Sistem posodobi seznam opravil.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Uporabnik prekliče izbris → opravilo ostane nespremenjeno.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka brisanja iz baze → sistem vrne napako.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Prikaži opravila</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 7</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Prikazati uporabniku seznam vseh opravil.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik, Gost</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravila obstajajo v sistemu.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Sistem ostane nespremenjen.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik odpre pogled opravil.<br>
+         2.Korak: Sistem pridobi opravila iz baze.<br>
+         3.Korak: Sistem jih prikaže uporabniku.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Ni opravil → prazen seznam.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri pridobivanju iz baze → obvestilo uporabniku.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Išči opravila</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 8</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Najti opravila glede na iskalni niz, ki ga vnese uporabnik.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik, Gost</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Iskalni niz je vnesen.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Sistem ostane nespremenjen – prikaže filtrirane rezultate.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik vnese iskani niz.<br>
+         2.Korak: Sistem poišče ujemanja v bazi.<br>
+         3.Korak: Sistem prikaže rezultate iskanja.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Ni najdenih rezultatov → sistem prikaže "Ni zadetkov".</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri iskanju v bazi → obvestilo uporabniku.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Filtriraj opravila</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 9</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Prikazati le opravila, ki ustrezajo izbranim kriterijem.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik, Gost</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravila obstajajo v sistemu.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Sistem ostane nespremenjen – spremeni se samo prikaz.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik odpre filtriranje.<br>
+         2.Korak: Izbere filter (datum, status, kategorija).<br>
+         3.Korak: Sistem prikaže filtrirana opravila.<br>
+         4.Korak: Možnost izbire "Napredno filtriranje".<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Izbran filter ne vrne rezultatov → prikaže se prazen seznam.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Neveljaven filter → sistem izpiše opozorilo.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Napredno filtriranje</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 10</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Omogočiti kombinacijo več naprednih filtrov za natančnejši prikaz opravil.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik, Gost</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Osnovno filtriranje je omogočeno.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Sistem ostane nespremenjen – prikaže rezultat naprednih filtrov.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik izbere možnost »Napredno filtriranje«.<br>
+         2.Korak: Sistem prikaže dodatne parametre (več filtrov).<br>
+         3.Korak: Uporabnik vnese pogoje.<br>
+         4.Korak: Sistem prikaže rezultat filtriranja.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Filter se med seboj izključuje → sistem opozori uporabnika.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri filtriranju → prikaže se sporočilo o napaki.</td>
+    </tr>
+</table>
+
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Prikaži opravila v koledarju</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 11</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Vizualni prikaz opravil v koledarskem pogledu.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik, Gost</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravila imajo določene datume.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Sistem ostane nespremenjen – prikaže koledarski pogled.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik odpre pogled koledarja.<br>
+         2.Korak: Sistem pridobi opravila z rokom.<br>
+         3.Korak: Sistem prikaže opravila na ustreznih datumih.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Ni opravil z datumi → prikaže se prazen koledar.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri nalaganju koledarja → sistem prikaže opozorilo.</td>
+    </tr>
+</table>
+
+<table style="width:100%; border-collapse: collapse; border: 1px solid black;">
+    <tr>
+        <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Reschedule</td>
+        <td style="border: 1px solid black; padding: 8px; width: 30%;">ID: 12</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Cilj: Uporabnik želi spremeniti datum opravila neposredno iz koledarskega pogleda.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Akterji: Uporabnik</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Predpogoji: Opravilo je dodano v koledar in ima določen datum.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Stanje sistema po PU: Posodobi se rok opravila v bazi podatkov.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Scenariji: <br> 
+         1.Korak: Uporabnik prestavi opravilo na drug dan (drag & drop).<br>
+         2.Korak: Sistem preveri veljavnost novega datuma.<br>
+         3.Korak: Sistem shrani spremembo v bazo.<br>
+         4.Korak: Koledar se posodobi.<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Alternativni tokovi: Premik na neveljaven datum → sistem prepreči premik.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri shranjevanju novega datuma → opozorilo uporabniku.</td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
