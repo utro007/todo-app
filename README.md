@@ -136,6 +136,7 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
 | **Frontend**          | Uporabniški del aplikacije, kjer uporabnik vidi in uporablja aplikacijo.                 |
 
 ## 7.DPU
+<img width="693" height="701" alt="RIS drawio (2)" src="https://github.com/user-attachments/assets/7310f5f3-e5be-4b4a-9375-944da64c4569" />
 
 ```mermaid
 graph TD
