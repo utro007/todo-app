@@ -138,55 +138,6 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
 ## 7.DPU
 <img width="693" height="701" alt="RIS drawio (2)" src="https://github.com/user-attachments/assets/7310f5f3-e5be-4b4a-9375-944da64c4569" />
 
-```mermaid
-graph TD
-    %% Actors
-    A1[Uporabnik]
-    A2[Gost]
-    
-    %% Use Cases
-    B1[Dodaj opravilo]
-    B2[Uredi opravilo]
-    B3[Izbriši opravilo]
-    B4[Označi kot dokončano]
-    B5[Označi kot nedokončano]
-    B6[Filtriraj opravila]
-    B7[Prikaži vse opravila]
-    B8[Išči opravila]
-    B9[Dodaj opis opravila]
-    B10[Napredno filtriranje]
-    
-    %% Relationships
-    A1 --> B1
-    A1 --> B2
-    A1 --> B3
-    A1 --> B4
-    A1 --> B5
-    A1 --> B6
-    A1 --> B7
-    A1 --> B8
-    
-    A2 --> B1
-    A2 --> B7
-    
-    %% Include relationships
-    B1 -.-> B9
-    
-    %% Extend relationship
-    B6 -.-> B10
-    
-    %% Styling - improved colors for better readability
-    classDef actor fill:#2E7D32,stroke:#1B5E20,stroke-width:2px,color:#ffffff
-    classDef useCase fill:#1565C0,stroke:#0D47A1,stroke-width:2px,color:#ffffff
-    classDef include fill:#fff,stroke:#666,stroke-dasharray: 5 5,color:#000000
-    classDef extend fill:#fff,stroke:#666,stroke-dasharray: 5 5,color:#000000
-    
-    class A1,A2 actor
-    class B1,B2,B3,B4,B5,B6,B7,B8,B9,B10 useCase
-    linkStyle 8,9 stroke:#666,stroke-dasharray: 5 5
-    linkStyle 10 stroke:#666,stroke-dasharray: 5 5
-```
-
 
 ### 8. Podrobni opisi
 <table style="width:100%; border-collapse: collapse; border: 1px solid black;">
