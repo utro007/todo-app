@@ -547,7 +547,103 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
         <td colspan="3" style="border: 1px solid black; padding: 8px;">Izjeme: Napaka pri shranjevanju novega datuma → opozorilo uporabniku.</td>
     </tr>
 </table>
+<br />
 
+<img width="2041" height="1381" alt="image" src="https://github.com/user-attachments/assets/c53a2216-db46-492e-b8a1-df01b206cfa2" />
+
+# 📋 Todo Application – Class Diagram Overview
+
+Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend** in **backend** komponente. Namen je prikazati vlogo vsakega razreda, ključne metode ter celotno dinamiko aplikacije.
+
+---
+
+## 🖥️ Frontend
+
+### `TodoClientApp`
+- **Vloga:** Glavna aplikacija na strani uporabnika.
+- **Namen:** Upravljanje uporabniškega vmesnika in komunikacije z backendom.
+- **Ključne metode:**
+  - `apiCall(endpoint, options)`: Pošilja zahteve na strežnik.
+  - `loadTodo()`: Nalaganje opravil.
+  - `handleLogin(event)`, `handleLogout(event)`: Upravljanje prijave in odjave.
+  - `checkPermission(action)`: Preverjanje dovoljenj glede na vlogo.
+  - `handleReschedule(id, newDate)`: Sprememba roka opravila.
+
+---
+
+## 🔐 Avtentikacija
+
+### `AuthController`
+- **Vloga:** Sprejema zahteve za prijavo in registracijo.
+- **Metode:** `login()`, `register()`
+
+### `UserService`
+- **Vloga:** Poslovna logika za uporabnike.
+- **Metode:** `loadUserByUsername()`, `registerUser()`
+
+### `UserRepository`
+- **Vloga:** Dostop do podatkovne baze uporabnikov.
+- **Metoda:** `findByUsername()`
+
+### `User` (entiteta)
+- **Vloga:** Predstavlja uporabnika v sistemu.
+- **Atributi:** ID, uporabniško ime, geslo, vloga.
+- **Metode:** Getterji in setterji.
+
+### `Role` (enum)
+- **Vloga:** Določa tip uporabnika.
+- **Vrednosti:** `ADMIN`, `GUEST`
+
+---
+
+## 📋 Upravljanje opravil (Todos)
+
+### `TodoController`
+- **Vloga:** Sprejema REST zahteve za opravila.
+- **Ključne metode:**
+  - `getAllTodos()`, `getTodoById(id)`
+  - `createTodo(todo)`, `updateTodo(id, todo)`, `deleteTodo(id)`
+  - `getCompletedTodos()`, `getIncompleteTodos()`
+  - `searchTodos(keyword)`, `filterTodos(criteria)`
+  - `rescheduleTodo(id, newDate, user)`
+
+### `TodoService`
+- **Vloga:** Poslovna logika za opravila.
+- **Metode:** Enake kot v kontrolerju, vendar brez HTTP sloja.
+
+### `TodoRepository`
+- **Vloga:** Dostop do podatkovne baze opravil.
+- **Ključne metode:**
+  - `findAllByUser(user)`, `findByIdAndUser(id, user)`
+  - `findByCompletedAndUser(...)`
+  - `findByUserAndDueDateBetween(...)`
+  - `findByUserAndKeyword(...)`
+
+### `Todo` (entiteta)
+- **Vloga:** Predstavlja posamezno opravilo.
+- **Atributi:** Naslov, opis, status, datumi, uporabnik.
+- **Metode:** Getterji in setterji.
+
+---
+
+## ⚠️ Obravnava napak
+
+### `GlobalExceptionHandler`
+- **Vloga:** Centralizirano ravnanje z napakami.
+- **Metode:**
+  - `handleValidationException(...)`
+  - `handleGenericException(...)`
+
+---
+
+## 🧠 Funkcionalna dinamika
+
+1. Uporabnik preko `TodoClientApp` pošlje zahtevo (npr. sprememba roka).
+2. Zahteva gre v `TodoController`, ki jo posreduje `TodoService`.
+3. `TodoService` preveri pravice uporabnika in uporabi `TodoRepository` za dostop do podatkov.
+4. Rezultat se vrne nazaj v frontend, kjer se prikaže uporabniku.
+
+---
 
 
 
