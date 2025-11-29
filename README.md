@@ -551,13 +551,13 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
 
 <img width="2041" height="1381" alt="image" src="https://github.com/user-attachments/assets/c53a2216-db46-492e-b8a1-df01b206cfa2" />
 
-# 📋 Todo Application – Class Diagram Overview
+# Razredni diagram
 
 Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend** in **backend** komponente. Namen je prikazati vlogo vsakega razreda, ključne metode ter celotno dinamiko aplikacije.
 
 ---
 
-## 🖥️ Frontend
+## Frontend
 
 ### `TodoClientApp`
 - **Vloga:** Glavna aplikacija na strani uporabnika.
@@ -571,7 +571,7 @@ Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend**
 
 ---
 
-## 🔐 Avtentikacija
+## Avtentikacija
 
 ### `AuthController`
 - **Vloga:** Sprejema zahteve za prijavo in registracijo.
@@ -596,7 +596,7 @@ Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend**
 
 ---
 
-## 📋 Upravljanje opravil (Todos)
+## Upravljanje opravil (Todos)
 
 ### `TodoController`
 - **Vloga:** Sprejema REST zahteve za opravila.
@@ -626,7 +626,7 @@ Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend**
 
 ---
 
-## ⚠️ Obravnava napak
+## Obravnava napak
 
 ### `GlobalExceptionHandler`
 - **Vloga:** Centralizirano ravnanje z napakami.
@@ -636,7 +636,7 @@ Ta dokument opisuje razredni diagram aplikacije Todo, ki vključuje **frontend**
 
 ---
 
-## 🧠 Funkcionalna dinamika
+## Funkcionalna dinamika
 
 1. Uporabnik preko `TodoClientApp` pošlje zahtevo (npr. sprememba roka).
 2. Zahteva gre v `TodoController`, ki jo posreduje `TodoService`.
