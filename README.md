@@ -139,7 +139,7 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
 <img width="693" height="701" alt="RIS drawio (2)" src="https://github.com/user-attachments/assets/7310f5f3-e5be-4b4a-9375-944da64c4569" />
 
 
-### 8. Podrobni opisi
+## 8. Podrobni opisi
 <table style="width:100%; border-collapse: collapse; border: 1px solid black;">
     <tr>
         <td style="border: 1px solid black; padding: 8px;">Primer uporabe: Dodaj opravilo</td>
@@ -549,9 +549,10 @@ V prihodnosti bi v aplikacijo vključili še prijavo in registracijo uporabnikov
 </table>
 <br />
 
+## 9. Razredni diagram
 <img width="2041" height="1381" alt="image" src="https://github.com/user-attachments/assets/c53a2216-db46-492e-b8a1-df01b206cfa2" />
 
-# Opis razrednega diagrama
+## 10. Opis razrednega diagrama
 
 Ta dokument opisuje razrede aplikacije Todo, njihovo vlogo, namen in ključne metode, ki omogočajo izvedbo funkcionalnosti.
 
