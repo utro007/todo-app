@@ -561,7 +561,7 @@ Ta dokument opisuje razrede aplikacije Todo, njihovo vlogo, namen in ključne me
 ## Frontend
 
 ### `TodoClientApp`
-- **Vloga in namen:** Glavna aplikacija na strani uporabnika. Skrbi za komunikacijo z backendom, prikaz opravil in preverjanje dovoljenj.
+- **Vloga in namen:** Glavna aplikacija na strani uporabnika, ki skrbi za uporabniški vmesnik, komunikacijo z backendom, prikaz opravil in preverjanje dovoljenj.
 - **Ključne metode:**
   - `apiCall(endpoint, options)`: Pošilja HTTP zahteve na strežnik.
   - `loadTodo()`: Nalaganje opravil za trenutnega uporabnika.
@@ -615,7 +615,7 @@ Ta dokument opisuje razrede aplikacije Todo, njihovo vlogo, namen in ključne me
   - `rescheduleTodo(id, newDate, user)`: Sprememba roka opravila.
 
 ### `TodoService`
-- **Vloga in namen:** Poslovna logika za opravila. Obdeluje zahteve, preverja pravice in posreduje podatke v repozitorij.
+- **Vloga in namen:** Implementacija poslovnega sloja za opravila. Obdeluje zahteve, izvaja poslovno logiko, preverja pravice in koordinira dostop do podatkov preko repozitorija.
 - **Ključne metode:** Enake kot v kontrolerju, vendar brez HTTP sloja – izvajajo dejanske operacije nad podatki.
 
 ### `TodoRepository`
