@@ -44,10 +44,26 @@
                 <div class="char-count" id="descCharCount">0/500</div>
             </div>
 
+            <!-- Polje za rok opravila (neobvezno) -->
+            <div class="form-group">
+                <label for="todoDeadline" class="form-label">
+                    <i class="fas fa-calendar-alt"></i> Rok opravila (neobvezno)
+                </label>
+                <input
+                        type="datetime-local"
+                        id="todoDeadline"
+                        class="form-input"
+                >
+            </div>
+
             <!-- Gumbi za dodajanje ali preklic urejanja -->
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="submitBtn">
                     <i class="fas fa-plus"></i> Dodaj nalogo
+                </button>
+
+                <button type="button" class="btn btn-info" id="calendarBtn">
+                    <i class="fas fa-calendar"></i> Koledar
                 </button>
 
                 <!-- Vidno samo, ko uporabnik ureja obstoječo nalogo -->
@@ -126,7 +142,7 @@
 
     <!-- Noga aplikacije -->
     <footer class="footer">
-        <p>Todo App &copy; 2025 | Aljaž Utroša</p>
+        <p>Todo App &copy; 2025 | Aljaž Utroša in Omar Ždralović</p>
     </footer>
 </div>
 
@@ -143,6 +159,28 @@
                 <i class="fas fa-times"></i> Prekliči
             </button>
         </div>
+    </div>
+</div>
+
+<!-- Modalno okno za koledarski prikaz -->
+<div id="calendarModal" class="modal" style="display: none;">
+    <div class="modal-content calendar-modal">
+        <div class="calendar-header">
+            <h3><i class="fas fa-calendar"></i> Koledar nalog</h3>
+            <button class="modal-close" id="closeCalendarBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="calendar-navigation">
+            <button class="btn btn-secondary" id="prevMonthBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h4 id="calendarMonthYear"></h4>
+            <button class="btn btn-secondary" id="nextMonthBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div id="calendarContainer" class="calendar-container"></div>
     </div>
 </div>
 
