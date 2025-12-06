@@ -159,4 +159,27 @@ public class TodoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Vrne vse naloge z rokom za določen mesec in leto.
+     * Uporablja se za koledarski prikaz.
+     * @param year Leto (npr. 2025)
+     * @param month Mesec (1-12)
+     */
+    @GetMapping("/calendar")
+    public ResponseEntity<List<Todo>> getTodosForCalendar(
+            @RequestParam int year,
+            @RequestParam int month) {
+        try {
+            // Validacija meseca
+            if (month < 1 || month > 12) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<Todo> todos = todoService.getTodosByMonth(year, month);
+            return ResponseEntity.ok(todos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
