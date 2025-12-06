@@ -88,6 +88,35 @@ body {
     color: #64748b;
 }
 
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #374151;
+    font-size: 14px;
+}
+
+.form-label i {
+    margin-right: 5px;
+    color: #4f46e5;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
 .form-actions {
     display: flex;
     gap: 10px;
@@ -152,6 +181,16 @@ body {
 
 .btn-danger:hover {
     background: #dc2626;
+}
+
+.btn-info {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
 }
 
 /* Controls */
@@ -287,6 +326,34 @@ body {
     font-size: 14px;
     line-height: 1.5;
     word-break: break-word;
+    margin-bottom: 8px;
+}
+
+.todo-deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #4f46e5;
+    font-weight: 500;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: #eef2ff;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.todo-deadline i {
+    color: #4f46e5;
+}
+
+.todo-deadline.deadline-overdue {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.todo-deadline.deadline-overdue i {
+    color: #dc2626;
 }
 
 .todo-meta {
@@ -377,6 +444,12 @@ body {
     text-align: center;
 }
 
+.calendar-modal {
+    max-width: 900px;
+    width: 95%;
+    text-align: left;
+}
+
 .modal-content h3 {
     margin-bottom: 15px;
     color: #1f2937;
@@ -384,6 +457,175 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.calendar-header h3 {
+    margin: 0;
+    justify-content: flex-start;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #1f2937;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-navigation h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1f2937;
+    flex: 1;
+    text-align: center;
+}
+
+.calendar-navigation .btn {
+    padding: 8px 16px;
+}
+
+.calendar-container {
+    margin-top: 20px;
+}
+
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.calendar-weekday {
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    min-height: 100px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.calendar-day:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1);
+}
+
+.calendar-day.empty {
+    background: #f8fafc;
+    border-color: transparent;
+}
+
+.calendar-day.today {
+    background: #eef2ff;
+    border-color: #4f46e5;
+    font-weight: 600;
+}
+
+.calendar-day.past {
+    opacity: 0.6;
+}
+
+.calendar-day-number {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #1f2937;
+}
+
+.calendar-todos {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 5px;
+}
+
+.calendar-todo {
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: #eef2ff;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-todo:hover {
+    background: #c7d2fe;
+}
+
+.calendar-todo.completed {
+    background: #d1fae5;
+    color: #059669;
+    text-decoration: line-through;
+}
+
+.calendar-todo.overdue {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.calendar-todo i {
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+.calendar-todo span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-todo-more {
+    font-size: 10px;
+    color: #64748b;
+    font-style: italic;
+    padding: 2px 6px;
 }
 
 .modal-actions {
