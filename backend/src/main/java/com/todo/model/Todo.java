@@ -52,6 +52,12 @@ public class Todo {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /**
+     * Rok za dokončanje naloge (opcijsko).
+     */
+    @Column(name = "deadline")
+    private LocalDateTime deadline;
+
     // --------------------------------------------------
     // Konstruktorji
     // --------------------------------------------------
@@ -145,6 +151,15 @@ public class Todo {
         this.updatedAt = updatedAt;
     }
 
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // --------------------------------------------------
     // Debug izpis (uporaben pri logiranju)
     // --------------------------------------------------
@@ -157,6 +172,7 @@ public class Todo {
                 ", completed=" + completed +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", deadline=" + deadline +
                 '}';
     }
 }
