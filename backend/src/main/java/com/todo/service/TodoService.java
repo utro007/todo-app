@@ -62,6 +62,7 @@ public class TodoService {
             existingTodo.setTitle(todoDetails.getTitle());
             existingTodo.setDescription(todoDetails.getDescription());
             existingTodo.setCompleted(todoDetails.getCompleted());
+            existingTodo.setDeadline(todoDetails.getDeadline());
 
             return todoRepository.save(existingTodo);
         }
@@ -118,5 +119,13 @@ public class TodoService {
         }
 
         return null;
+    }
+
+    /**
+     * Vrne vse naloge z rokom za določen mesec in leto.
+     * Uporablja se za koledarski prikaz.
+     */
+    public List<Todo> getTodosByMonth(int year, int month) {
+        return todoRepository.findByDeadlineYearAndMonth(year, month);
     }
 }
