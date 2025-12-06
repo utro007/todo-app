@@ -48,6 +48,23 @@ services:
     networks:
       - todo-network
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: todo-phpmyadmin
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - todo-network
+
 volumes:
   mysql_data:
 
