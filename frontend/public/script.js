@@ -5,6 +5,7 @@ let todos = [];              // Seznam vseh nalog pridobljenih iz API-ja
 let editingId = null;        // ID naloge, ki jo trenutno urejamo (null = dodajanje nove)
 let currentFilter = 'all';   // Trenutni filter prikaza ('all', 'active', 'completed')
 let deleteTodoId = null;     // ID naloge, ki je označena za brisanje (pred potrditvijo)
+let currentCalendarDate = new Date(); // Trenutni datum za koledarski prikaz
 
 // -----------------------
 // Pridobivanje referenc na DOM elemente
@@ -12,6 +13,7 @@ let deleteTodoId = null;     // ID naloge, ki je označena za brisanje (pred pot
 const todoForm = document.getElementById('todoForm');
 const todoTitle = document.getElementById('todoTitle');
 const todoDescription = document.getElementById('todoDescription');
+const todoDeadline = document.getElementById('todoDeadline');
 const submitBtn = document.getElementById('submitBtn');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const todosList = document.getElementById('todosList');
@@ -28,6 +30,13 @@ const descCharCount = document.getElementById('descCharCount');
 const deleteModal = document.getElementById('deleteModal');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+const calendarBtn = document.getElementById('calendarBtn');
+const calendarModal = document.getElementById('calendarModal');
+const closeCalendarBtn = document.getElementById('closeCalendarBtn');
+const calendarContainer = document.getElementById('calendarContainer');
+const calendarMonthYear = document.getElementById('calendarMonthYear');
+const prevMonthBtn = document.getElementById('prevMonthBtn');
+const nextMonthBtn = document.getElementById('nextMonthBtn');
 
 // -----------------------
 // Osnova API-ja
@@ -64,6 +73,10 @@ async function loadTodos() {
         todos = await apiCall(API_BASE);
         displayTodos();
         updateStats();
+        // Posodobi koledar, če je odprt
+        if (calendarModal && calendarModal.style.display === 'flex') {
+            renderCalendar();
+        }
     } catch (error) {
         showError('Napaka pri nalaganju nalog: ' + error.message);
     }
@@ -98,7 +111,10 @@ function displayTodos() {
     hideEmptyStates();
 
     // Generiranje HTML-ja za prikaz nalog
-    todosList.innerHTML = filteredTodos.map(todo => `
+    todosList.innerHTML = filteredTodos.map(todo => {
+        const deadlineClass = todo.deadline && new Date(todo.deadline) < new Date() && !todo.completed ? 'deadline-overdue' : '';
+        const deadlineDisplay = todo.deadline ? `<span class="todo-deadline ${deadlineClass}"><i class="fas fa-calendar-alt"></i> Rok: ${formatDate(todo.deadline)}</span>` : '';
+        return `
         <div class="todo-item ${todo.completed ? 'completed' : ''}" id="todo-${todo.id}">
             <div class="todo-checkbox">
                 <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
@@ -107,6 +123,7 @@ function displayTodos() {
             <div class="todo-content">
                 <div class="todo-title">${escapeHtml(todo.title)}</div>
                 ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
+                ${deadlineDisplay}
                 <div class="todo-meta">
                     <span>Ustvarjeno: ${formatDate(todo.createdAt)}</span>
                     ${todo.updatedAt !== todo.createdAt ? `<span>Posodobljeno: ${formatDate(todo.updatedAt)}</span>` : ''}
@@ -122,7 +139,8 @@ function displayTodos() {
                 </button>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // -----------------------
@@ -133,6 +151,14 @@ async function handleSubmit(event) {
 
     const title = todoTitle.value.trim();
     const description = todoDescription.value.trim();
+    
+    // Convert datetime-local to ISO format for backend
+    let deadline = null;
+    if (todoDeadline.value) {
+        // datetime-local returns "YYYY-MM-DDTHH:mm", convert to ISO string
+        const date = new Date(todoDeadline.value);
+        deadline = date.toISOString();
+    }
 
     if (!title) {
         showError('Vnesite naslov naloge');
@@ -143,21 +169,25 @@ async function handleSubmit(event) {
     try {
         hideError();
 
+        const todoData = {
+            title,
+            description,
+            deadline: deadline
+        };
+
         if (editingId) {
             // Posodobitev obstoječe naloge
+            todoData.completed = todos.find(t => t.id === editingId)?.completed || false;
             await apiCall(`${API_BASE}/${editingId}`, {
                 method: 'PUT',
-                body: JSON.stringify({
-                    title,
-                    description,
-                    completed: todos.find(t => t.id === editingId)?.completed || false
-                })
+                body: JSON.stringify(todoData)
             });
         } else {
             // Ustvarjanje nove naloge
+            todoData.completed = false;
             await apiCall(API_BASE, {
                 method: 'POST',
-                body: JSON.stringify({ title, description, completed: false })
+                body: JSON.stringify(todoData)
             });
         }
 
@@ -190,6 +220,20 @@ function editTodo(id) {
     editingId = id;
     todoTitle.value = todo.title;
     todoDescription.value = todo.description || '';
+    
+    // Format deadline for datetime-local input (YYYY-MM-DDTHH:mm)
+    if (todo.deadline) {
+        const deadlineDate = new Date(todo.deadline);
+        const year = deadlineDate.getFullYear();
+        const month = String(deadlineDate.getMonth() + 1).padStart(2, '0');
+        const day = String(deadlineDate.getDate()).padStart(2, '0');
+        const hours = String(deadlineDate.getHours()).padStart(2, '0');
+        const minutes = String(deadlineDate.getMinutes()).padStart(2, '0');
+        todoDeadline.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    } else {
+        todoDeadline.value = '';
+    }
+    
     submitBtn.innerHTML = '<i class="fas fa-save"></i> Shrani spremembe';
     cancelEditBtn.style.display = 'flex';
     todoTitle.focus();
@@ -297,6 +341,104 @@ function showNoResults() { noResults.style.display = 'block'; emptyState.style.d
 function hideEmptyStates() { emptyState.style.display = 'none'; noResults.style.display = 'none'; }
 
 // -----------------------
+// Koledarski prikaz
+// -----------------------
+async function showCalendar() {
+    currentCalendarDate = new Date();
+    calendarModal.style.display = 'flex';
+    await renderCalendar();
+}
+
+function hideCalendar() {
+    calendarModal.style.display = 'none';
+}
+
+async function renderCalendar() {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth() + 1; // JavaScript month is 0-based, backend expects 1-12
+    
+    // Nastavi naslov meseca
+    const monthNames = ['Januar', 'Februar', 'Marec', 'April', 'Maj', 'Junij', 
+                       'Julij', 'Avgust', 'September', 'Oktober', 'November', 'December'];
+    calendarMonthYear.textContent = `${monthNames[month - 1]} ${year}`;
+    
+    // Prvi dan v mesecu
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay(); // 0 = nedelja, 1 = ponedeljek, ...
+    
+    // Prilagodi za ponedeljek kot prvi dan (0 = ponedeljek)
+    const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
+    
+    // Pridobi naloge za trenutni mesec iz backend-a
+    let monthTodos = [];
+    try {
+        monthTodos = await apiCall(`${API_BASE}/calendar?year=${year}&month=${month}`);
+    } catch (error) {
+        console.error('Error loading calendar todos:', error);
+        showError('Napaka pri nalaganju koledarskih podatkov: ' + error.message);
+    }
+    
+    // Ustvari koledar
+    let calendarHTML = '<div class="calendar-grid">';
+    
+    // Dnevi v tednu
+    const dayNames = ['Pon', 'Tor', 'Sre', 'Čet', 'Pet', 'Sob', 'Ned'];
+    calendarHTML += '<div class="calendar-weekdays">';
+    dayNames.forEach(day => {
+        calendarHTML += `<div class="calendar-weekday">${day}</div>`;
+    });
+    calendarHTML += '</div>';
+    
+    // Prazne celice za prvi dan
+    calendarHTML += '<div class="calendar-days">';
+    for (let i = 0; i < adjustedStartingDay; i++) {
+        calendarHTML += '<div class="calendar-day empty"></div>';
+    }
+    
+    // Dnevi v mesecu
+    for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month - 1, day); // month - 1 ker je JavaScript 0-based
+        const dayTodos = monthTodos.filter(todo => {
+            const deadlineDate = new Date(todo.deadline);
+            return deadlineDate.getDate() === day;
+        });
+        
+        const isToday = currentDate.toDateString() === new Date().toDateString();
+        const isPast = currentDate < new Date() && !isToday;
+        
+        calendarHTML += `<div class="calendar-day ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}">`;
+        calendarHTML += `<div class="calendar-day-number">${day}</div>`;
+        
+        if (dayTodos.length > 0) {
+            calendarHTML += '<div class="calendar-todos">';
+            dayTodos.slice(0, 3).forEach(todo => {
+                const overdue = new Date(todo.deadline) < new Date() && !todo.completed;
+                calendarHTML += `<div class="calendar-todo ${todo.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}" title="${escapeHtml(todo.title)}">`;
+                calendarHTML += `<i class="fas ${todo.completed ? 'fa-check-circle' : 'fa-circle'}"></i>`;
+                calendarHTML += `<span>${escapeHtml(todo.title.length > 15 ? todo.title.substring(0, 15) + '...' : todo.title)}</span>`;
+                calendarHTML += '</div>';
+            });
+            if (dayTodos.length > 3) {
+                calendarHTML += `<div class="calendar-todo-more">+${dayTodos.length - 3} več</div>`;
+            }
+            calendarHTML += '</div>';
+        }
+        
+        calendarHTML += '</div>';
+    }
+    
+    calendarHTML += '</div></div>';
+    calendarContainer.innerHTML = calendarHTML;
+}
+
+async function changeMonth(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    await renderCalendar();
+}
+
+// -----------------------
 // Dogodki
 // -----------------------
 document.addEventListener('DOMContentLoaded', function() {
@@ -309,8 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
     todoDescription.addEventListener('input', updateCharCounts);
     confirmDeleteBtn.addEventListener('click', confirmDelete);
     cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+    calendarBtn.addEventListener('click', showCalendar);
+    closeCalendarBtn.addEventListener('click', hideCalendar);
+    prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+    nextMonthBtn.addEventListener('click', () => changeMonth(1));
 
     deleteModal.addEventListener('click', e => { if (e.target === deleteModal) hideDeleteModal(); });
+    calendarModal.addEventListener('click', e => { if (e.target === calendarModal) hideCalendar(); });
 
     window.hideError = hideError; // omogoča zapiranje napak iz HTML-ja
     updateCharCounts();
@@ -323,6 +470,7 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         if (editingId) cancelEdit();
         if (deleteModal.style.display === 'flex') hideDeleteModal();
+        if (calendarModal.style.display === 'flex') hideCalendar();
     }
 
     // Ctrl+K / Cmd+K → fokus na iskanje
