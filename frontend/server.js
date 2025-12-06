@@ -56,6 +56,26 @@ app.get('/api/todos', async (req, res) => {
     }
 });
 
+// Pridobi naloge za koledarski prikaz (po mesecu in letu) - MORA BITI PRED /:id
+app.get('/api/todos/calendar', async (req, res) => {
+    try {
+        const { year, month } = req.query;
+        console.log(`Fetching todos for calendar: year=${year}, month=${month}`);
+        
+        if (!year || !month) {
+            return res.status(400).json({ error: 'Year and month parameters are required' });
+        }
+        
+        const response = await axios.get(`${BACKEND_URL}/api/todos/calendar`, {
+            params: { year, month }
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching calendar todos:', error.message);
+        res.status(500).json({ error: 'Failed to fetch calendar todos', details: error.message });
+    }
+});
+
 // Pridobi nalogo po ID
 app.get('/api/todos/:id', async (req, res) => {
     try {
@@ -75,10 +95,10 @@ app.get('/api/todos/:id', async (req, res) => {
 // Ustvari novo nalogo
 app.post('/api/todos', async (req, res) => {
     try {
-        const { title, description, completed = false } = req.body;
-        console.log('Creating new todo:', { title, description, completed });
+        const { title, description, completed = false, deadline } = req.body;
+        console.log('Creating new todo:', { title, description, completed, deadline });
 
-        const response = await axios.post(`${BACKEND_URL}/api/todos`, { title, description, completed });
+        const response = await axios.post(`${BACKEND_URL}/api/todos`, { title, description, completed, deadline });
         res.status(201).json(response.data);
     } catch (error) {
         console.error('Error creating todo:', error.message);
@@ -90,10 +110,10 @@ app.post('/api/todos', async (req, res) => {
 app.put('/api/todos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, completed } = req.body;
-        console.log(`Updating todo ${id}:`, { title, description, completed });
+        const { title, description, completed, deadline } = req.body;
+        console.log(`Updating todo ${id}:`, { title, description, completed, deadline });
 
-        const response = await axios.put(`${BACKEND_URL}/api/todos/${id}`, { title, description, completed });
+        const response = await axios.put(`${BACKEND_URL}/api/todos/${id}`, { title, description, completed, deadline });
         res.json(response.data);
     } catch (error) {
         console.error('Error updating todo:', error.message);
@@ -132,6 +152,7 @@ app.delete('/api/todos/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete todo', details: error.message });
     }
 });
+
 
 
 /* --------------------------------------------------
