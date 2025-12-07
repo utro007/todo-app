@@ -341,6 +341,86 @@ function showNoResults() { noResults.style.display = 'block'; emptyState.style.d
 function hideEmptyStates() { emptyState.style.display = 'none'; noResults.style.display = 'none'; }
 
 // -----------------------
+// NOVO: Drag & Drop funkcionalnost za reschedule
+// -----------------------
+
+/**
+ * Prestavi nalogo na nov datum preko API-ja.
+ * Uporablja se pri drag & drop v koledarju.
+ * ALTERNATIVNA METODA: Uporabi obstoječ PUT /api/todos/{id} endpoint
+ */
+async function handleReschedule(taskId, newDate) {
+    console.log('handleReschedule called:', { taskId, newDate }); // DEBUG
+
+    try {
+        // Najprej pridobi trenutno nalogo
+        const todoResponse = await fetch(`${API_BASE}/${taskId}`);
+        if (!todoResponse.ok) {
+            throw new Error('Naloga ne obstaja');
+        }
+
+        const todo = await todoResponse.json();
+        console.log('Current todo:', todo); // DEBUG
+
+        // Pretvori datum v ISO format z časom 12:00:00
+        const dateObj = new Date(newDate + 'T12:00:00');
+        const isoDate = dateObj.toISOString();
+
+        // Posodobi deadline
+        todo.deadline = isoDate;
+
+        console.log('Sending update request:', { taskId, newDeadline: isoDate }); // DEBUG
+
+        // Uporabi obstoječ PUT /api/todos/{id} endpoint
+        const response = await fetch(`${API_BASE}/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(todo)
+        });
+
+        console.log('Response status:', response.status); // DEBUG
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Reschedule success:', result); // DEBUG
+
+            // POMEMBNO: Ponovno naloži VSE naloge (ne samo koledar)
+            await loadTodos(); // To bo osvežilo tudi glavni seznam nalog
+
+            // Prikaži obvestilo
+            showNotification('Opravilo prestavljeno!', 'success');
+        } else {
+            const errorMsg = await response.text();
+            console.error('Reschedule error:', errorMsg); // DEBUG
+            showNotification('Napaka pri prestavitvi: ' + errorMsg, 'error');
+        }
+    } catch (error) {
+        console.error('Napaka pri reschedule:', error);
+        showNotification('Napaka pri komunikaciji s strežnikom', 'error');
+    }
+}
+
+/**
+ * Prikaže toast notification sporočilo.
+ */
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// -----------------------
 // Koledarski prikaz
 // -----------------------
 async function showCalendar() {
@@ -400,6 +480,8 @@ async function renderCalendar() {
     // Dnevi v mesecu
     for (let day = 1; day <= daysInMonth; day++) {
         const currentDate = new Date(year, month - 1, day); // month - 1 ker je JavaScript 0-based
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
         const dayTodos = monthTodos.filter(todo => {
             const deadlineDate = new Date(todo.deadline);
             return deadlineDate.getDate() === day;
@@ -408,14 +490,17 @@ async function renderCalendar() {
         const isToday = currentDate.toDateString() === new Date().toDateString();
         const isPast = currentDate < new Date() && !isToday;
         
-        calendarHTML += `<div class="calendar-day ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}">`;
+        calendarHTML += `<div class="calendar-day ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}" data-date="${dateStr}">`;
         calendarHTML += `<div class="calendar-day-number">${day}</div>`;
         
         if (dayTodos.length > 0) {
             calendarHTML += '<div class="calendar-todos">';
             dayTodos.slice(0, 3).forEach(todo => {
                 const overdue = new Date(todo.deadline) < new Date() && !todo.completed;
-                calendarHTML += `<div class="calendar-todo ${todo.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}" title="${escapeHtml(todo.title)}">`;
+                calendarHTML += `<div class="calendar-todo ${todo.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}" 
+                                     draggable="true" 
+                                     data-task-id="${todo.id}" 
+                                     title="${escapeHtml(todo.title)}">`;
                 calendarHTML += `<i class="fas ${todo.completed ? 'fa-check-circle' : 'fa-circle'}"></i>`;
                 calendarHTML += `<span>${escapeHtml(todo.title.length > 15 ? todo.title.substring(0, 15) + '...' : todo.title)}</span>`;
                 calendarHTML += '</div>';
@@ -431,6 +516,69 @@ async function renderCalendar() {
     
     calendarHTML += '</div></div>';
     calendarContainer.innerHTML = calendarHTML;
+
+    // Dodan drag and drop event listener
+    setupDragAndDrop();
+}
+
+/**
+ * Nastavi drag & drop event listener-je za koledar.
+ */
+function setupDragAndDrop() {
+    const taskElements = calendarContainer.querySelectorAll('.calendar-todo[draggable="true"]');
+    const dayElements = calendarContainer.querySelectorAll('.calendar-day:not(.empty)');
+
+    console.log('setupDragAndDrop:', { // DEBUG
+        taskCount: taskElements.length,
+        dayCount: dayElements.length
+    });
+
+    // Nastavi event listener-je za vlečenje nalog
+    taskElements.forEach(taskEl => {
+        taskEl.addEventListener('dragstart', (e) => {
+            console.log('dragstart:', taskEl.dataset.taskId); // DEBUG
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', taskEl.dataset.taskId);
+            taskEl.classList.add('dragging');
+        });
+
+        taskEl.addEventListener('dragend', (e) => {
+            console.log('dragend'); // DEBUG
+            taskEl.classList.remove('dragging');
+        });
+    });
+
+    // Nastavi event listener-je za spuščanje nalog na dneve
+    dayElements.forEach(dayEl => {
+        dayEl.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            dayEl.classList.add('drag-over');
+        });
+
+        dayEl.addEventListener('dragleave', (e) => {
+            // Preveri, če smo res zapustili element (ne zgolj otroke)
+            if (!dayEl.contains(e.relatedTarget)) {
+                dayEl.classList.remove('drag-over');
+            }
+        });
+
+        dayEl.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dayEl.classList.remove('drag-over');
+
+            const taskId = e.dataTransfer.getData('text/plain');
+            const newDate = dayEl.dataset.date;
+
+            console.log('drop event:', { taskId, newDate }); // DEBUG
+
+            if (taskId && newDate) {
+                handleReschedule(taskId, newDate);
+            } else {
+                console.error('Missing taskId or newDate:', { taskId, newDate }); // DEBUG
+            }
+        });
+    });
 }
 
 async function changeMonth(direction) {

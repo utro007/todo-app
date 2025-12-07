@@ -566,6 +566,13 @@ body {
     opacity: 0.6;
 }
 
+/*drag and drop*/
+.calendar-day.drag-over {
+    background: #e3f2fd;
+    border: 2px dashed #2196F3;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
 .calendar-day-number {
     font-weight: 600;
     margin-bottom: 5px;
@@ -588,7 +595,7 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
-    cursor: pointer;
+    cursor: move; /*drag and drop*/
     transition: all 0.2s ease;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -597,6 +604,13 @@ body {
 
 .calendar-todo:hover {
     background: #c7d2fe;
+    transform: scale(1.02); /* drag and drop dodatek */
+}
+
+/* drag and drop */
+.calendar-todo.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
 }
 
 .calendar-todo.completed {
@@ -633,6 +647,62 @@ body {
     gap: 10px;
     justify-content: center;
     margin-top: 20px;
+}
+
+/* drag and drop */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease-out;
+    min-width: 250px;
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.notification i {
+    font-size: 18px;
+}
+
+.notification.fade-out {
+    animation: slideOutRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
 }
 
 /* Footer */
@@ -681,6 +751,13 @@ body {
 
     .form-actions {
         flex-direction: column;
+    }
+
+    /* drag and drop */
+    .notification {
+        right: 10px;
+        left: 10px;
+        min-width: auto;
     }
 }
 
