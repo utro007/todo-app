@@ -652,6 +652,102 @@ Ta dokument opisuje razrede aplikacije Todo, njihovo vlogo, namen in ključne me
 
 ---
 
+## 11. Implementacija koledarskega prikaza
+
+### 11.1. Opis funkcionalnosti
+
+Implementirana je funkcionalnost **koledarskega prikaza nalog**, ki omogoča uporabnikom vizualni pregled vseh nalog z določenim rokom za trenutni mesec. Koledar prikazuje naloge na ustreznih datumih, omogoča navigacijo med meseci in vizualno označuje pretekle roke ter opravljene naloge.
+
+### 11.2. Delovanje funkcionalnosti
+
+#### Backend implementacija
+
+Koledarski prikaz je implementiran v backend-u z naslednjimi funkcionalnostmi:
+
+1. **TodoRepository** - Dodana metoda `findByDeadlineYearAndMonth()`:
+   - Izvede SQL poizvedbo, ki vrne vse naloge z rokom za določen mesec in leto
+   - Uporablja native query z MySQL funkcijama `YEAR()` in `MONTH()` za iskanje
+
+2. **TodoService** - Dodana metoda `getTodosByMonth()`:
+   - Pošlje zahtevo repozitoriju in vrača željene naloge
+
+3. **TodoController** - Dodan endpoint `GET /api/todos/calendar`:
+   - Sprejema parametra `year` (leto) in `month` (mesec, 1-12)
+   - Preverja vhodne podatke
+   - Vrne seznam nalog z rokom za trenutni mesec
+
+#### Frontend implementacija
+
+1. **UI komponente**:
+   - Dodan gumb "Koledar"
+   - Dodano okno v katerem se prikaže koledar
+   - Dodani gumbi za premikanje med meseci
+
+2. **JavaScript funkcionalnost**:
+   - `showCalendar()` - Odpre okno in prikaže koledar
+   - `renderCalendar()` - Generira koledarski prikaz in kliče API z backenda
+   - `changeMonth()` - Omogoča premikanje med meseci
+
+3. **Vizualne oznake**:
+   - **Pretekle roke** - Rdeče barve za neopravljene naloge
+   - **Opravljene naloge** - Zelene barve
+   - **Aktivne naloge** - Modre barve
+   - **Današnji dan** - Modra obroba
+   - **Pretekli dnevi** - Svetlo siva obroba
+   - **Prihodnji dnevi** - Temno siva obroba
+
+#### API endpoint
+
+```
+GET /api/todos/calendar?year=2025&month=12
+```
+
+### 11.3. Prezkus nove funkcionalnosti
+
+#### Korak 1: Dostop do koledarja
+
+1. Odpri aplikacijo v brskalniku (http://localhost:3001)
+2. V obrazcu za dodajanje nalog poišči gumb **"Koledar"**
+3. Klikni na gumb **"Koledar"**
+
+#### Korak 2: Pregled koledarja
+
+1. Odpre se novo okno s koledarskim prikazom za **trenutni mesec**
+2. V koledarju so prikazani:
+   - Dnevi v mesecu (ponedeljek - nedelja)
+   - Naloge z rokom na ustreznih dnevih
+   - Vizualne oznake (danes, pretekle roke, opravljene naloge)
+
+#### Korak 3: Navigacija med meseci
+
+1. Uporabi puščici **←** (prejšnji mesec) in **→** (naslednji mesec) v zgornjem delu odprtega okna
+2. Koledar se sproti posodobi z dodanimi novimi nalogami
+
+#### Korak 4: Testiranje z nalogami
+
+1. **Ustvari novo nalogo z rokom:**
+   - Vnesi naslov naloge
+   - V polju "Rok opravila" izberi datum
+   - Klikni "Dodaj nalogo"
+   - Odpri koledar in naloga se bo prikazala na ustreznem mestu
+
+2. **Preveri vizualne oznake:**
+   - Neopravljene naloge s preteklim rokom so označene rdeče
+   - Opravljene naloge so zelene
+   - Prihajajoče naloge so modre
+   - Današnji dan je označen z modrim ozadjem
+
+#### Korak 5: Zapiranje koledarja
+
+- Klikni na gumb **✕** v zgornjem desnem odprega okna za izhod iz koledara
+
+#### Opombe za testiranje
+
+- Koledar prikazuje **samo naloge z določenim rokom za dokončanje**
+- Naloge brez roka se v koledarju ne prikažejo
+- Če so v enem dnevu več kot 3 naloge se izpiše in več
+
+---
 
 
 
