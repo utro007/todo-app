@@ -184,6 +184,25 @@
     </div>
 </div>
 
+<!-- Modalno okno za prikaz nalog za izbrani dan -->
+<div id="dayTasksModal" class="modal" style="display: none;">
+    <div class="modal-content day-tasks-modal">
+        <div class="calendar-header">
+            <h3><i class="fas fa-calendar-day"></i> Naloge za dan</h3>
+            <button class="modal-close" id="closeDayTasksBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="dayTasksDate" class="day-tasks-date"></div>
+        <div id="dayTasksList" class="day-tasks-list"></div>
+        <div id="dayTasksEmpty" class="empty-state" style="display: none;">
+            <i class="fas fa-calendar-check"></i>
+            <h3>Ni nalog</h3>
+            <p>Za ta dan ni načrtovanih nalog</p>
+        </div>
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
