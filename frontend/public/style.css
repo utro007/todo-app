@@ -450,6 +450,12 @@ body {
     text-align: left;
 }
 
+.day-tasks-modal {
+    max-width: 600px;
+    width: 90%;
+    text-align: left;
+}
+
 .modal-content h3 {
     margin-bottom: 15px;
     color: #1f2937;
@@ -544,6 +550,7 @@ body {
     background: white;
     transition: all 0.3s ease;
     position: relative;
+    cursor: pointer;
 }
 
 .calendar-day:hover {
@@ -640,6 +647,124 @@ body {
     color: #64748b;
     font-style: italic;
     padding: 2px 6px;
+}
+
+/* Day Tasks Modal Styles */
+.day-tasks-date {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4f46e5;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #eef2ff;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.day-tasks-list {
+    max-height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.day-task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.day-task-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.day-task-item.completed {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    opacity: 0.8;
+}
+
+.day-task-item.overdue {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.day-task-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #4f46e5;
+    font-size: 1rem;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.day-task-item.overdue .day-task-time {
+    color: #dc2626;
+}
+
+.day-task-time i {
+    font-size: 14px;
+}
+
+.day-task-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.day-task-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+
+.day-task-item.completed .day-task-title {
+    text-decoration: line-through;
+    color: #6b7280;
+}
+
+.day-task-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.day-task-status {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+/* Scrollbar styling for day tasks list */
+.day-tasks-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.day-tasks-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.day-tasks-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.day-tasks-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .modal-actions {
@@ -777,6 +902,15 @@ body {
 
     .modal-actions {
         flex-direction: column;
+    }
+
+    .day-tasks-modal {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .day-tasks-list {
+        max-height: 400px;
     }
 }
 
