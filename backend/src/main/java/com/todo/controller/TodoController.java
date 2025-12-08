@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * REST kontroler, ki izpostavlja API za upravljanje Todo nalog.
- * Zadolžen je za prejem HTTP zahtev in delegiranje logike na storitveno (service) plast.
+ * REST kontroler izpostavlja API za upravljanje Todo nalog.
+ * Prejema HTTP zahteve.
  */
 @RestController
 @RequestMapping("/api/todos")
@@ -53,8 +53,8 @@ public class TodoController {
 
     /**
      * Ustvari novo nalogo.
-     * @Valid poskrbi za validacijo podatkov v modelu (npr. @NotBlank).
-     * ID mora biti null → generira ga baza.
+     * @Valid poskrbi za validacijo podatkov v modelu
+     * ID mora biti null → generira ga baza avtomatsko.
      */
     @PostMapping
     public ResponseEntity<Todo> createTodo(@Valid @RequestBody Todo todo) {
@@ -161,10 +161,10 @@ public class TodoController {
     }
 
     /**
-     * Vrne vse naloge z rokom za določen mesec in leto.
+     * Vrne vse naloge z rokom za trenutni mesec in leto.
      * Uporablja se za koledarski prikaz.
-     * @param year Leto (npr. 2025)
-     * @param month Mesec (1-12)
+     * @param year Leto
+     * @param month Mesec
      */
     @GetMapping("/calendar")
     public ResponseEntity<List<Todo>> getTodosForCalendar(

@@ -1,15 +1,12 @@
-// -----------------------
-// Globalno stanje aplikacije
-// -----------------------
 let todos = [];              // Seznam vseh nalog pridobljenih iz API-ja
 let editingId = null;        // ID naloge, ki jo trenutno urejamo (null = dodajanje nove)
 let currentFilter = 'all';   // Trenutni filter prikaza ('all', 'active', 'completed')
 let deleteTodoId = null;     // ID naloge, ki je označena za brisanje (pred potrditvijo)
 let currentCalendarDate = new Date(); // Trenutni datum za koledarski prikaz
 
-// -----------------------
-// Pridobivanje referenc na DOM elemente
-// -----------------------
+
+// Pridobivanje referenc
+
 const todoForm = document.getElementById('todoForm');
 const todoTitle = document.getElementById('todoTitle');
 const todoDescription = document.getElementById('todoDescription');
@@ -38,14 +35,12 @@ const calendarMonthYear = document.getElementById('calendarMonthYear');
 const prevMonthBtn = document.getElementById('prevMonthBtn');
 const nextMonthBtn = document.getElementById('nextMonthBtn');
 
-// -----------------------
 // Osnova API-ja
-// -----------------------
 const API_BASE = '/api/todos';
 
 /**
- * Splošna funkcija za klic API-ja.
- * Ovdje centraliziramo obravnavo napak in standardne nastavitve.
+ * Splošna funkcija za klic API-ja
+ * Obravnava napak in standardne nastavitve
  */
 async function apiCall(endpoint, options = {}) {
     try {
@@ -63,9 +58,7 @@ async function apiCall(endpoint, options = {}) {
     }
 }
 
-// -----------------------
 // Nalaganje podatkov iz API-ja
-// -----------------------
 async function loadTodos() {
     try {
         showLoading();
@@ -82,9 +75,7 @@ async function loadTodos() {
     }
 }
 
-// -----------------------
 // Prikaz nalog glede na filter in iskalni niz
-// -----------------------
 function displayTodos() {
     hideLoading();
 
@@ -143,19 +134,17 @@ function displayTodos() {
     }).join('');
 }
 
-// -----------------------
 // Obdelava oddaje obrazca (dodajanje ali posodabljanje naloge)
-// -----------------------
 async function handleSubmit(event) {
     event.preventDefault();
 
     const title = todoTitle.value.trim();
     const description = todoDescription.value.trim();
     
-    // Convert datetime-local to ISO format for backend
+    // Convert datetime-local v ISO format za backend
     let deadline = null;
     if (todoDeadline.value) {
-        // datetime-local returns "YYYY-MM-DDTHH:mm", convert to ISO string
+        // datetime-local vrne "YYYY-MM-DDTHH:mm"
         const date = new Date(todoDeadline.value);
         deadline = date.toISOString();
     }
@@ -198,9 +187,7 @@ async function handleSubmit(event) {
     }
 }
 
-// -----------------------
 // Preklop stanja (opravljeno / aktivno)
-// -----------------------
 async function toggleTodo(id) {
     try {
         await apiCall(`${API_BASE}/${id}/toggle`, { method: 'PATCH' });
@@ -210,9 +197,7 @@ async function toggleTodo(id) {
     }
 }
 
-// -----------------------
 // Urejanje naloge
-// -----------------------
 function editTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
@@ -221,7 +206,7 @@ function editTodo(id) {
     todoTitle.value = todo.title;
     todoDescription.value = todo.description || '';
     
-    // Format deadline for datetime-local input (YYYY-MM-DDTHH:mm)
+    // Format za deadline datetime-local vnos je (YYYY-MM-DDTHH:mm)
     if (todo.deadline) {
         const deadlineDate = new Date(todo.deadline);
         const year = deadlineDate.getFullYear();
@@ -254,9 +239,7 @@ function resetForm() {
     updateCharCounts();
 }
 
-// -----------------------
-// Brisanje z modalnim potrjevanjem
-// -----------------------
+// Brisanje z
 function showDeleteModal(id) {
     deleteTodoId = id;
     deleteModal.style.display = 'flex';
@@ -280,23 +263,19 @@ function hideDeleteModal() {
     deleteTodoId = null;
 }
 
-// -----------------------
 // Filtriranje in iskanje
-// -----------------------
 function setFilter(filter) {
     currentFilter = filter;
     filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
     displayTodos();
 }
 
-// Iskanje po naslovu/opisu
+// Iskanje po naslovu
 function handleSearch() {
     displayTodos();
 }
 
-// -----------------------
-// Statistika nalog
-// -----------------------
+// prikaz statistike nalog
 function updateStats() {
     const total = todos.length;
     const completed = todos.filter(t => t.completed).length;
@@ -305,17 +284,13 @@ function updateStats() {
     todoStats.textContent = `${active} aktivnih, ${completed} opravljenih, ${total} skupaj`;
 }
 
-// -----------------------
 // Spremljanje dolžine vnosa
-// -----------------------
 function updateCharCounts() {
     titleCharCount.textContent = `${todoTitle.value.length}/100`;
     descCharCount.textContent = `${todoDescription.value.length}/500`;
 }
 
-// -----------------------
 // Pomožne funkcije
-// -----------------------
 function escapeHtml(unsafe) {
     return unsafe.replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -329,9 +304,7 @@ function formatDate(dateString) {
     return date.toLocaleDateString('sl-SI') + ' ' + date.toLocaleTimeString('sl-SI');
 }
 
-// -----------------------
 // UI nadzor prikaza
-// -----------------------
 function showLoading() { loading.style.display = 'block'; todosList.innerHTML = ''; hideEmptyStates(); }
 function hideLoading() { loading.style.display = 'none'; }
 function showError(msg) { errorText.textContent = msg; error.style.display = 'flex'; }
@@ -340,9 +313,7 @@ function showEmptyState() { emptyState.style.display = 'block'; noResults.style.
 function showNoResults() { noResults.style.display = 'block'; emptyState.style.display = 'none'; todosList.innerHTML = ''; }
 function hideEmptyStates() { emptyState.style.display = 'none'; noResults.style.display = 'none'; }
 
-// -----------------------
 // Koledarski prikaz
-// -----------------------
 async function showCalendar() {
     currentCalendarDate = new Date();
     calendarModal.style.display = 'flex';
@@ -355,7 +326,7 @@ function hideCalendar() {
 
 async function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
-    const month = currentCalendarDate.getMonth() + 1; // JavaScript month is 0-based, backend expects 1-12
+    const month = currentCalendarDate.getMonth() + 1; // JavaScript meseci so 0-based, backend sprememba zaradi backenda v 1-12
     
     // Nastavi naslov meseca
     const monthNames = ['Januar', 'Februar', 'Marec', 'April', 'Maj', 'Junij', 
@@ -368,7 +339,7 @@ async function renderCalendar() {
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay(); // 0 = nedelja, 1 = ponedeljek, ...
     
-    // Prilagodi za ponedeljek kot prvi dan (0 = ponedeljek)
+    // 0 = ponedeljek
     const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
     
     // Pridobi naloge za trenutni mesec iz backend-a
@@ -383,7 +354,7 @@ async function renderCalendar() {
     // Ustvari koledar
     let calendarHTML = '<div class="calendar-grid">';
     
-    // Dnevi v tednu
+    // Dnevi v tednu skrajšani
     const dayNames = ['Pon', 'Tor', 'Sre', 'Čet', 'Pet', 'Sob', 'Ned'];
     calendarHTML += '<div class="calendar-weekdays">';
     dayNames.forEach(day => {
@@ -399,7 +370,7 @@ async function renderCalendar() {
     
     // Dnevi v mesecu
     for (let day = 1; day <= daysInMonth; day++) {
-        const currentDate = new Date(year, month - 1, day); // month - 1 ker je JavaScript 0-based
+        const currentDate = new Date(year, month - 1, day); // month - 1 zaradi js
         const dayTodos = monthTodos.filter(todo => {
             const deadlineDate = new Date(todo.deadline);
             return deadlineDate.getDate() === day;
@@ -438,9 +409,7 @@ async function changeMonth(direction) {
     await renderCalendar();
 }
 
-// -----------------------
 // Dogodki
-// -----------------------
 document.addEventListener('DOMContentLoaded', function() {
     loadTodos();
     todoForm.addEventListener('submit', handleSubmit);
@@ -463,9 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCharCounts();
 });
 
-// -----------------------
 // Bližnjice na tipkovnici
-// -----------------------
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         if (editingId) cancelEdit();

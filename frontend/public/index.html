@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Ikone (Font Awesome) -->
+    <!-- Ikone -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -17,11 +17,11 @@
         <p>Organiziraj svoje naloge enostavno in učinkovito</p>
     </header>
 
-    <!-- Obrazec za dodajanje ali urejanje naloge -->
+    <!-- Dodajanje ali urejanje naloge -->
     <div class="todo-form-container">
         <form class="todo-form" id="todoForm">
 
-            <!-- Polje za naslov naloge + števec znakov -->
+            <!-- Polje za naslov naloge + prikaže števec znakov -->
             <div class="form-group">
                 <input
                         type="text"
@@ -56,7 +56,7 @@
                 >
             </div>
 
-            <!-- Gumbi za dodajanje ali preklic urejanja -->
+            <!-- Gumbi za dodajanje ali preklic urejanja in koledar -->
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="submitBtn">
                     <i class="fas fa-plus"></i> Dodaj nalogo
@@ -102,7 +102,7 @@
             </button>
         </div>
 
-        <!-- Prikaz statistike (npr. št. aktivnih / opravljenih nalog) -->
+        <!-- Prikaz statistike -->
         <div class="stats">
             <span id="todoStats">Nalagam...</span>
         </div>

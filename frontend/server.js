@@ -1,9 +1,8 @@
 /**
- * Frontend Node.js strežnik z API proxy podporo.
+ * Frontend Node.js strežnik z API proxy podporo
  * Namen:
- * - Servira statične datoteke (HTML, CSS, JS).
- * - Posreduje API klice na backend (Spring Boot).
- * - Omogoča obratovanje SPA aplikacije (single-page app).
+ * - Servira statične datoteke (HTML, CSS, JS)
+ * - Posreduje API klice na backend (Spring Boot)
  */
 
 const express = require('express');
@@ -157,7 +156,7 @@ app.delete('/api/todos/:id', async (req, res) => {
 
 /* --------------------------------------------------
    SPA Podpora (Single Page Application)
-   - Če pot ni API, vedno serviramo index.html
+   - Če pot ni API, vedno odpre v index.html
 -------------------------------------------------- */
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
