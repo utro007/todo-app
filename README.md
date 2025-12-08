@@ -736,8 +736,13 @@ GET /api/todos/calendar?year=2025&month=12
    - Opravljene naloge so zelene
    - Prihajajoče naloge so modre
    - Današnji dan je označen z modrim ozadjem
+  
+#### Korak 5: Drag and Drop funkcionalnost
+1. Stisni in drži na izbrano nalogo
+2. Probaj jo prestaviti na drugi datum
+3. Potem ko jo spustiš, se bo njen rok posodobil na koledaru in na seznamu
 
-#### Korak 5: Zapiranje koledarja
+#### Korak 6: Zapiranje koledarja
 
 - Klikni na gumb **✕** v zgornjem desnem odprega okna za izhod iz koledara
 
