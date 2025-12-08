@@ -34,6 +34,11 @@ const calendarContainer = document.getElementById('calendarContainer');
 const calendarMonthYear = document.getElementById('calendarMonthYear');
 const prevMonthBtn = document.getElementById('prevMonthBtn');
 const nextMonthBtn = document.getElementById('nextMonthBtn');
+const dayTasksModal = document.getElementById('dayTasksModal');
+const closeDayTasksBtn = document.getElementById('closeDayTasksBtn');
+const dayTasksDate = document.getElementById('dayTasksDate');
+const dayTasksList = document.getElementById('dayTasksList');
+const dayTasksEmpty = document.getElementById('dayTasksEmpty');
 
 // Osnova API-ja
 const API_BASE = '/api/todos';
@@ -335,94 +340,26 @@ async function handleReschedule(taskId, newDate) {
         const todo = await todoResponse.json();
         console.log('Current todo:', todo); // DEBUG
 
-        // Pretvori datum v ISO format z časom 12:00:00
-        const dateObj = new Date(newDate + 'T12:00:00');
-        const isoDate = dateObj.toISOString();
-
-        // Posodobi deadline
-        todo.deadline = isoDate;
-
-        console.log('Sending update request:', { taskId, newDeadline: isoDate }); // DEBUG
-
-        // Uporabi obstoječ PUT /api/todos/{id} endpoint
-        const response = await fetch(`${API_BASE}/${taskId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(todo)
-        });
-
-        console.log('Response status:', response.status); // DEBUG
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Reschedule success:', result); // DEBUG
-
-            // POMEMBNO: Ponovno naloži VSE naloge (ne samo koledar)
-            await loadTodos(); // To bo osvežilo tudi glavni seznam nalog
-
-            // Prikaži obvestilo
-            showNotification('Opravilo prestavljeno!', 'success');
+        // Ohrani originalno uro in minute, če obstaja deadline
+        let newDeadline;
+        if (todo.deadline) {
+            const oldDeadline = new Date(todo.deadline);
+            const hours = String(oldDeadline.getHours()).padStart(2, '0');
+            const minutes = String(oldDeadline.getMinutes()).padStart(2, '0');
+            const seconds = String(oldDeadline.getSeconds()).padStart(2, '0');
+            // Uporabi nov datum z originalno uro
+            const dateObj = new Date(newDate + `T${hours}:${minutes}:${seconds}`);
+            newDeadline = dateObj.toISOString();
         } else {
-            const errorMsg = await response.text();
-            console.error('Reschedule error:', errorMsg); // DEBUG
-            showNotification('Napaka pri prestavitvi: ' + errorMsg, 'error');
+            // Če ni deadline-ja, nastavi privzeti čas na 12:00:00
+            const dateObj = new Date(newDate + 'T12:00:00');
+            newDeadline = dateObj.toISOString();
         }
-    } catch (error) {
-        console.error('Napaka pri reschedule:', error);
-        showNotification('Napaka pri komunikaciji s strežnikom', 'error');
-    }
-}
-
-/**
- * Prikaže toast notification sporočilo.
- */
-function showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// -----------------------
-// NOVO: Drag & Drop funkcionalnost za reschedule
-// -----------------------
-
-/**
- * Prestavi nalogo na nov datum preko API-ja.
- * Uporablja se pri drag & drop v koledarju.
- * ALTERNATIVNA METODA: Uporabi obstoječ PUT /api/todos/{id} endpoint
- */
-async function handleReschedule(taskId, newDate) {
-    console.log('handleReschedule called:', { taskId, newDate }); // DEBUG
-
-    try {
-        // Najprej pridobi trenutno nalogo
-        const todoResponse = await fetch(`${API_BASE}/${taskId}`);
-        if (!todoResponse.ok) {
-            throw new Error('Naloga ne obstaja');
-        }
-
-        const todo = await todoResponse.json();
-        console.log('Current todo:', todo); // DEBUG
-
-        // Pretvori datum v ISO format z časom 12:00:00
-        const dateObj = new Date(newDate + 'T12:00:00');
-        const isoDate = dateObj.toISOString();
 
         // Posodobi deadline
-        todo.deadline = isoDate;
+        todo.deadline = newDeadline;
 
-        console.log('Sending update request:', { taskId, newDeadline: isoDate }); // DEBUG
+        console.log('Sending update request:', { taskId, newDeadline: newDeadline }); // DEBUG
 
         // Uporabi obstoječ PUT /api/todos/{id} endpoint
         const response = await fetch(`${API_BASE}/${taskId}`, {
@@ -570,6 +507,9 @@ async function renderCalendar() {
 
     // Dodan drag and drop event listener
     setupDragAndDrop();
+    
+    // Dodaj event listener-je za klik na dan
+    setupDayClickListeners();
 }
 
 /**
@@ -637,6 +577,113 @@ async function changeMonth(direction) {
     await renderCalendar();
 }
 
+/**
+ * Nastavi event listener-je za klik na dneve v koledarju.
+ * Ko uporabnik klikne na dan, se odpre modal z nalogami za ta dan.
+ */
+function setupDayClickListeners() {
+    const dayElements = calendarContainer.querySelectorAll('.calendar-day:not(.empty)');
+    
+    dayElements.forEach(dayEl => {
+        // Prepreči, da bi klik na nalogo odprl modal (ker je naloga draggable)
+        dayEl.addEventListener('click', (e) => {
+            // Če je klik na nalogo ali njen element, ne odpri modal
+            if (e.target.closest('.calendar-todo')) {
+                return;
+            }
+            
+            const dateStr = dayEl.dataset.date;
+            if (dateStr) {
+                showDayTasks(dateStr);
+            }
+        });
+    });
+}
+
+/**
+ * Prikaže modal z vsemi nalogami za izbrani dan.
+ * Naloge so razvrščene po času roka.
+ * @param {string} dateStr - Datum v formatu "YYYY-MM-DD"
+ */
+async function showDayTasks(dateStr) {
+    try {
+        // Prikaži modal
+        dayTasksModal.style.display = 'flex';
+        
+        // Formatiraj datum za prikaz
+        const date = new Date(dateStr + 'T12:00:00');
+        const dateFormatted = date.toLocaleDateString('sl-SI', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        dayTasksDate.textContent = dateFormatted;
+        
+        // Filtriraj naloge za izbrani dan
+        const dayTodos = todos.filter(todo => {
+            if (!todo.deadline) return false;
+            
+            const deadlineDate = new Date(todo.deadline);
+            const deadlineDateStr = `${deadlineDate.getFullYear()}-${String(deadlineDate.getMonth() + 1).padStart(2, '0')}-${String(deadlineDate.getDate()).padStart(2, '0')}`;
+            
+            return deadlineDateStr === dateStr;
+        });
+        
+        // Razvrsti naloge po času roka (najprej najzgodnejše)
+        dayTodos.sort((a, b) => {
+            const timeA = new Date(a.deadline).getTime();
+            const timeB = new Date(b.deadline).getTime();
+            return timeA - timeB;
+        });
+        
+        // Prikaži naloge ali prazno stanje
+        if (dayTodos.length === 0) {
+            dayTasksList.style.display = 'none';
+            dayTasksEmpty.style.display = 'block';
+        } else {
+            dayTasksEmpty.style.display = 'none';
+            dayTasksList.style.display = 'block';
+            
+            // Generiraj HTML za naloge
+            dayTasksList.innerHTML = dayTodos.map(todo => {
+                const deadlineDate = new Date(todo.deadline);
+                const timeStr = deadlineDate.toLocaleTimeString('sl-SI', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                const overdue = deadlineDate < new Date() && !todo.completed;
+                
+                return `
+                    <div class="day-task-item ${todo.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}">
+                        <div class="day-task-time">
+                            <i class="fas fa-clock"></i>
+                            ${timeStr}
+                        </div>
+                        <div class="day-task-content">
+                            <div class="day-task-title">${escapeHtml(todo.title)}</div>
+                            ${todo.description ? `<div class="day-task-description">${escapeHtml(todo.description)}</div>` : ''}
+                        </div>
+                        <div class="day-task-status">
+                            ${todo.completed ? '<i class="fas fa-check-circle" style="color: #10b981;"></i>' : '<i class="fas fa-circle" style="color: #64748b;"></i>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch (error) {
+        console.error('Napaka pri prikazu nalog za dan:', error);
+        showError('Napaka pri nalaganju nalog za izbrani dan: ' + error.message);
+    }
+}
+
+/**
+ * Skrije modal z nalogami za dan.
+ */
+function hideDayTasks() {
+    dayTasksModal.style.display = 'none';
+}
+
 // Dogodki
 document.addEventListener('DOMContentLoaded', function() {
     loadTodos();
@@ -652,9 +699,11 @@ document.addEventListener('DOMContentLoaded', function() {
     closeCalendarBtn.addEventListener('click', hideCalendar);
     prevMonthBtn.addEventListener('click', () => changeMonth(-1));
     nextMonthBtn.addEventListener('click', () => changeMonth(1));
+    closeDayTasksBtn.addEventListener('click', hideDayTasks);
 
     deleteModal.addEventListener('click', e => { if (e.target === deleteModal) hideDeleteModal(); });
     calendarModal.addEventListener('click', e => { if (e.target === calendarModal) hideCalendar(); });
+    dayTasksModal.addEventListener('click', e => { if (e.target === dayTasksModal) hideDayTasks(); });
 
     window.hideError = hideError; // omogoča zapiranje napak iz HTML-ja
     updateCharCounts();
@@ -666,6 +715,7 @@ document.addEventListener('keydown', function(event) {
         if (editingId) cancelEdit();
         if (deleteModal.style.display === 'flex') hideDeleteModal();
         if (calendarModal.style.display === 'flex') hideCalendar();
+        if (dayTasksModal.style.display === 'flex') hideDayTasks();
     }
 
     // Ctrl+K / Cmd+K → fokus na iskanje
