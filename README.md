@@ -15,6 +15,7 @@ todo-app/<br />
 ├─ backend/ # Spring Boot REST API<br />
 │ ├─ src/main/java/... # Kontrolerji, servisi, modeli, repozitoriji<br />
 │ ├─ src/main/resources/ # application.properties (povezava na MySQL)<br />
+│ ├─ src/test/java/... # Unit testi za backend funkcionalnosti<br />
 │ └─ pom.xml # Maven odvisnosti in konfiguracija<br />
 │<br />
 ├─ frontend/ # Node.js + Express strežnik<br />
@@ -22,6 +23,9 @@ todo-app/<br />
 │ ├─ views/ # EJS predloge (če uporabljene)<br />
 │ ├─ package.json # Node odvisnosti<br />
 │ └─ server.js # Vstopna točka frontenda<br />
+│<br />
+├─ testiranje/ # Mapa z dokumentacijo o testiranju<br />
+│ └─ porocilo_testiranja.md # Poročilo o unit testiranju<br />
 │<br />
 └─ docker-compose.yml # (Opcijsko) Docker orkestracija<br />
 
@@ -751,6 +755,64 @@ GET /api/todos/calendar?year=2025&month=12
 - Koledar prikazuje **samo naloge z določenim rokom za dokončanje**
 - Naloge brez roka se v koledarju ne prikažejo
 - Če so v enem dnevu več kot 3 naloge se izpiše in več
+
+---
+
+## 12. Unit testiranje
+
+### 12.1. Opis
+
+V projektu so implementirani unit testi za funkcionalnost koledarskega prikaza nalog. Testi pokrivajo service sloj in ključne scenarije uporabe, vključno s pozitivnimi in negativnimi primeri.
+
+### 12.2. Lokacija testov
+
+Unit testi se nahajajo v:
+- `backend/src/test/java/com/todo/service/TodoServiceCalendarTest.java` - Unit testi za service sloj (metoda getTodosByMonth)
+
+### 12.3. Zagon testov
+
+Za zagon testov uporabite Maven:
+
+```bash
+cd backend
+mvn test
+```
+
+Za zagon le testov koledarske funkcionalnosti:
+
+```bash
+mvn test -Dtest=TodoServiceCalendarTest
+```
+
+### 12.4. Poročilo o testiranju
+
+Podrobno poročilo o testiranju je na voljo v mapi `testiranje/porocilo_testiranja.md`. Poročilo vsebuje:
+- Opis implementiranih testov
+- Uporabljene anotacije in testne tehnike
+- Analizo uspešnosti testov
+- Informacije o pokritosti testov
+
+### 12.5. Testirane funkcionalnosti
+
+**TodoService.getTodosByMonth():**
+- Test za primer, ko ni nalog za določen mesec (vrača prazen seznam)
+- Test za primer z več nalogami v istem mesecu (vrača vse naloge)
+
+### 12.6. Testne anotacije
+
+V testih so uporabljene naslednje anotacije:
+- `@Test` - Označuje testno metodo
+- `@BeforeEach` - Izvede se pred vsakim testom
+- `@DisplayName` - Opisno ime testa
+- `@ExtendWith(MockitoExtension.class)` - Omogoča uporabo Mockito za mock objekte
+- `@Mock` - Ustvari mock objekt za dependency injection
+- `@InjectMocks` - Inicializira testni objekt z mock objekti
+
+### 12.7. Pokritost testov
+
+Testi pokrivajo:
+- ✅ Primer, ko ni nalog za določen mesec (prazen seznam)
+- ✅ Primer z več nalogami v istem mesecu
 
 ---
 
