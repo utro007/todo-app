@@ -34,11 +34,43 @@ Testni razred `TodoServiceCalendarTest` testira metodo `getTodosByMonth()` v `To
 **Negativni scenariji:**
 - Test za primer, ko ni nalog za določen mesec - preverja, da se vrača prazen seznam namesto null
 
+### 1.2. TodoServiceDeleteTest
+
+Testni razred `TodoServiceDeleteTest` testira metodo `deleteTodo()` v razredu
+`TodoService`, ki skrbi za brisanje nalog glede na ID.
+
+**Uporabljene anotacije:**
+- `@ExtendWith(MockitoExtension.class)` – omogoča uporabo Mockito
+- `@Mock` – mock repozitorija TodoRepository
+- `@InjectMocks` – injiciranje mock objekta v TodoService
+- `@BeforeEach` – inicializacija pred vsakim testom
+- `@Test` – označuje testno metodo
+- `@DisplayName` – opisno ime testa
+
+**Testirane funkcionalnosti:**
+
+1. **Brisanje obstoječe naloge**
+   - Preverja, da metoda vrne `true`, kadar naloga obstaja
+   - Preverja, da se metoda `deleteById()` dejansko pokliče
+   - Pomembno za zagotavljanje pravilnega brisanja podatkov
+
+2. **Brisanje neobstoječe naloge**
+   - Preverja, da metoda vrne `false`, kadar naloga ne obstaja
+   - Preverja, da se brisanje ne izvede
+   - Preprečuje napake in neželene posege v bazo
+
+**Pozitivni scenariji:**
+- Brisanje obstoječe naloge
+
+**Negativni scenariji:**
+- Poskus brisanja neobstoječe naloge
+
+
 ## 2. Imena članov skupine in odgovornosti
 
 **Razdelitev dela:**
 - [Aljaž] - Odgovoren za implementacijo unit testov za Koledar
-- [Omar] - 
+- [Omar] - Odgovoren za implementacijo unit testov za brisanje nalog
 
 ## 3. Analiza uspešnosti testov
 
@@ -47,6 +79,8 @@ Testni razred `TodoServiceCalendarTest` testira metodo `getTodosByMonth()` v `To
 Testi so bili uspešno izvedeni. Implementiran je bil en testni razred:
 
 1. **TodoServiceCalendarTest** - 2 testni metodi
+2. **TodoServiceDeleteTest** - 2 testni metodi
+
 
 
 ### 3.2. Odkrite napake in odpravljanje
@@ -55,3 +89,8 @@ Med testiranjem ni bilo napak v implementaciji koledarske funkcionalnosti. Vsi t
 
 - Metoda pravilno obravnava primer, ko ni nalog za določen mesec(vrača prazen seznam)
 - Metoda pravilno vrača vse naloge, ko jih je več v istem mesecu
+
+Testi za brisanje nalog so potrdili, da:
+- Aplikacija pravilno izbriše nalogo, kadar ta obstaja
+- Aplikacija varno obravnava primer, ko naloga ne obstaja, brez napak
+
