@@ -767,7 +767,7 @@ Implementirani unit testi za funkcionalnost koledarja. Testi pokrivajo service s
 ### 12.2. Lokacija testov
 
 Unit testi se nahajajo v:
-- `backend/src/test/java/com/todo/service/TodoServiceCalendarTest.java`
+- `backend/src/test/java/com/todo/service/`
 
 ### 12.3. Zagon testov
 
