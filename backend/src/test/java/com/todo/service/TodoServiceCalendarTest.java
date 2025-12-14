@@ -2,7 +2,6 @@ package com.todo.service;
 
 import com.todo.model.Todo;
 import com.todo.repository.TodoRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,17 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit testi za TodoService - funkcionalnost koledarja
- * 
- * Ta razred testira metodo getTodosByMonth(), ki vrača vse naloge z rokom
- * za določen mesec in leto. Testi pokrivajo pozitivne in negativne scenarije.
+ * Unit testi za TodoService – koledarska funkcionalnost
+ *
+ * Testira metodo getTodosByMonth(), ki vrača naloge glede na mesec in leto.
  */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("TodoService - Koledarska funkcionalnost")
+@DisplayName("TodoService – Koledarska funkcionalnost")
 class TodoServiceCalendarTest {
 
     @Mock
@@ -35,35 +32,18 @@ class TodoServiceCalendarTest {
     private TodoService todoService;
 
     /**
-     * Metoda, ki se izvede pred vsakim testom.
-     * Inicializira novo instanco TodoService.
-     */
-    @BeforeEach
-    void setUp() {
-        todoService = new TodoService();
-        // Nastavimo repository preko refleksije, ker TodoService uporablja @Autowired
-        try {
-            java.lang.reflect.Field field = TodoService.class.getDeclaredField("todoRepository");
-            field.setAccessible(true);
-            field.set(todoService, todoRepository);
-        } catch (Exception e) {
-            fail("Napaka pri nastavitvi mock repozitorija: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Test za primer, ko ni nalog za določen mesec.
-     * Preverja, da metoda pravilno vrača prazen seznam.
+     * Negativen scenarij:
+     * Če za določen mesec ni nalog, mora metoda vrniti prazen seznam.
      */
     @Test
-    @DisplayName("Pridobivanje nalog za mesec brez nalog - vrača prazen seznam")
-    void testGetTodosByMonth_NoTodos_ReturnsEmptyList() {
+    @DisplayName("Brez nalog v mesecu – vrne prazen seznam")
+    void getTodosByMonth_noTodos_returnsEmptyList() {
         // Arrange
         int year = 2025;
         int month = 1;
-        
+
         when(todoRepository.findByDeadlineYearAndMonth(year, month))
-            .thenReturn(new ArrayList<>());
+                .thenReturn(new ArrayList<>());
 
         // Act
         List<Todo> result = todoService.getTodosByMonth(year, month);
@@ -71,22 +51,22 @@ class TodoServiceCalendarTest {
         // Assert
         assertNotNull(result, "Rezultat ne sme biti null");
         assertTrue(result.isEmpty(), "Rezultat mora biti prazen seznam");
-        assertEquals(0, result.size(), "Velikost seznama mora biti 0");
-        
-        verify(todoRepository, times(1)).findByDeadlineYearAndMonth(year, month);
+
+        verify(todoRepository, times(1))
+                .findByDeadlineYearAndMonth(year, month);
     }
 
     /**
-     * Test za primer z več nalogami v istem mesecu.
-     * Preverja, da metoda pravilno vrača vse naloge.
+     * Pozitiven scenarij:
+     * Če obstaja več nalog v istem mesecu, jih mora metoda vse vrniti.
      */
     @Test
-    @DisplayName("Pridobivanje več nalog za isti mesec")
-    void testGetTodosByMonth_MultipleTodos_ReturnsAllTodos() {
+    @DisplayName("Več nalog v istem mesecu – vrne vse naloge")
+    void getTodosByMonth_multipleTodos_returnsAllTodos() {
         // Arrange
         int year = 2025;
         int month = 3;
-        
+
         List<Todo> todos = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Todo todo = new Todo("Naloga " + i, "Opis " + i);
@@ -96,17 +76,21 @@ class TodoServiceCalendarTest {
         }
 
         when(todoRepository.findByDeadlineYearAndMonth(year, month))
-            .thenReturn(todos);
+                .thenReturn(todos);
 
         // Act
         List<Todo> result = todoService.getTodosByMonth(year, month);
 
         // Assert
-        assertEquals(5, result.size(), "Mora vrniti 5 nalog");
-        for (int i = 0; i < 5; i++) {
-            assertEquals("Naloga " + (i + 1), result.get(i).getTitle(), 
-                "Naloga " + (i + 1) + " mora imeti pravilen naslov");
+        assertNotNull(result);
+        assertEquals(5, result.size(), "Vrnjeno mora biti 5 nalog");
+
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals("Naloga " + (i + 1), result.get(i).getTitle(),
+                    "Naslov naloge mora biti pravilen");
         }
+
+        verify(todoRepository, times(1))
+                .findByDeadlineYearAndMonth(year, month);
     }
 }
-
