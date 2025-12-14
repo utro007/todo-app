@@ -786,7 +786,7 @@ Za zagon le testov koledarske funkcionalnosti:
 
 ### 12.4. Poročilo o testiranju
 
-Poročilo o testiranju je na voljo v mapi `testiranje/porocilo_testiranja.md`.
+Poročilo o testiranju je na voljo v mapi [`testiranje/porocilo_testiranja.md`](https://github.com/utro007/todo-app/blob/main/testiranje/porocilo_testiranja.md).
 
 ---
 
