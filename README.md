@@ -762,12 +762,12 @@ GET /api/todos/calendar?year=2025&month=12
 
 ### 12.1. Opis
 
-V projektu so implementirani unit testi za funkcionalnost koledarskega prikaza nalog. Testi pokrivajo service sloj in ključne scenarije uporabe, vključno s pozitivnimi in negativnimi primeri.
+Implementirani unit testi za funkcionalnost koledarja. Testi pokrivajo service sloj.
 
 ### 12.2. Lokacija testov
 
 Unit testi se nahajajo v:
-- `backend/src/test/java/com/todo/service/TodoServiceCalendarTest.java` - Unit testi za service sloj (metoda getTodosByMonth)
+- `backend/src/test/java/com/todo/service/TodoServiceCalendarTest.java`
 
 ### 12.3. Zagon testov
 
@@ -781,38 +781,12 @@ mvn test
 Za zagon le testov koledarske funkcionalnosti:
 
 ```bash
-mvn test -Dtest=TodoServiceCalendarTest
+.\mvnw.cmd test -Dtest=TodoServiceCalendarTest
 ```
 
 ### 12.4. Poročilo o testiranju
 
-Podrobno poročilo o testiranju je na voljo v mapi `testiranje/porocilo_testiranja.md`. Poročilo vsebuje:
-- Opis implementiranih testov
-- Uporabljene anotacije in testne tehnike
-- Analizo uspešnosti testov
-- Informacije o pokritosti testov
-
-### 12.5. Testirane funkcionalnosti
-
-**TodoService.getTodosByMonth():**
-- Test za primer, ko ni nalog za določen mesec (vrača prazen seznam)
-- Test za primer z več nalogami v istem mesecu (vrača vse naloge)
-
-### 12.6. Testne anotacije
-
-V testih so uporabljene naslednje anotacije:
-- `@Test` - Označuje testno metodo
-- `@BeforeEach` - Izvede se pred vsakim testom
-- `@DisplayName` - Opisno ime testa
-- `@ExtendWith(MockitoExtension.class)` - Omogoča uporabo Mockito za mock objekte
-- `@Mock` - Ustvari mock objekt za dependency injection
-- `@InjectMocks` - Inicializira testni objekt z mock objekti
-
-### 12.7. Pokritost testov
-
-Testi pokrivajo:
-- ✅ Primer, ko ni nalog za določen mesec (prazen seznam)
-- ✅ Primer z več nalogami v istem mesecu
+Poročilo o testiranju je na voljo v mapi `testiranje/porocilo_testiranja.md`.
 
 ---
 
