@@ -762,7 +762,7 @@ GET /api/todos/calendar?year=2025&month=12
 
 ### 12.1. Opis
 
-Implementirani unit testi za funkcionalnost koledarja. Testi pokrivajo service sloj.
+Implementirani unit testi za funkcionalnost koledarja in funkcionalnost brisanja nalog. Testi pokrivajo service sloj.
 
 ### 12.2. Lokacija testov
 
@@ -778,10 +778,11 @@ cd backend
 mvn test
 ```
 
-Za zagon le testov koledarske funkcionalnosti:
+Za zagon le testov koledarske funkcionalnosti ali funkcionalnosti brisanja nalog:
 
 ```bash
 .\mvnw.cmd test -Dtest=TodoServiceCalendarTest
+.\mvnw.cmd test -Dtest=TodoServiceDeleteTest
 ```
 
 ### 12.4. Poročilo o testiranju
