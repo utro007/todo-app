@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import com.todo.dto.ProductivityStatsDTO;
+import java.time.Duration;
+
 
 /**
   Ta razred je vmes med kontrolerjem in repozitorijem
@@ -123,4 +126,43 @@ public class TodoService {
     public List<Todo> getTodosByMonth(int year, int month) {
         return todoRepository.findByDeadlineYearAndMonth(year, month);
     }
+
+
+    public ProductivityStatsDTO getProductivityStats() {
+
+        List<Todo> todos = todoRepository.findAll();
+
+        long totalTasks = todos.size();
+
+        List<Todo> completedTodos = todos.stream()
+                .filter(t -> Boolean.TRUE.equals(t.getCompleted()))
+                .filter(t -> t.getCompletedAt() != null)
+                .toList();
+
+        long completedTasks = completedTodos.size();
+
+        double averageDurationMinutes = 0;
+
+        if (completedTasks > 0) {
+            averageDurationMinutes = completedTodos.stream()
+                    .mapToLong(t ->
+                            Duration.between(t.getCreatedAt(), t.getCompletedAt()).toMinutes()
+                    )
+                    .average()
+                    .orElse(0);
+        }
+
+        double completedPercentage = 0;
+        if (totalTasks > 0) {
+            completedPercentage = ((double) completedTasks / totalTasks) * 100;
+        }
+
+        return new ProductivityStatsDTO(
+                averageDurationMinutes,
+                completedPercentage,
+                totalTasks,
+                completedTasks
+        );
+    }
+
 }

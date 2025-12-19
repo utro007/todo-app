@@ -53,6 +53,13 @@ public class Todo {
     private LocalDateTime updatedAt;
 
     /**
+     * Datum dokončanja naloge (nastavi se, ko je naloga označena kot completed)
+     */
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
+
+    /**
      * Rok za dokončanje naloge (opcijsko)
      */
     @Column(name = "deadline")
@@ -125,8 +132,18 @@ public class Todo {
 
     public void setCompleted(Boolean completed) {
         this.completed = completed;
+
+        if (completed != null && completed && this.completedAt == null) {
+            this.completedAt = LocalDateTime.now();
+        }
+
         this.updatedAt = LocalDateTime.now();
     }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
