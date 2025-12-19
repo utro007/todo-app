@@ -21,7 +21,6 @@ const emptyState = document.getElementById('emptyState');
 const noResults = document.getElementById('noResults');
 const searchInput = document.getElementById('searchInput');
 const filterButtons = document.querySelectorAll('.filter-btn');
-const todoStats = document.getElementById('todoStats');
 const titleCharCount = document.getElementById('titleCharCount');
 const descCharCount = document.getElementById('descCharCount');
 const deleteModal = document.getElementById('deleteModal');
@@ -39,6 +38,7 @@ const closeDayTasksBtn = document.getElementById('closeDayTasksBtn');
 const dayTasksDate = document.getElementById('dayTasksDate');
 const dayTasksList = document.getElementById('dayTasksList');
 const dayTasksEmpty = document.getElementById('dayTasksEmpty');
+const statsContainer = document.getElementById('statsContainer');
 
 // Osnova API-ja
 const API_BASE = '/api/todos';
@@ -70,7 +70,7 @@ async function loadTodos() {
         hideError();
         todos = await apiCall(API_BASE);
         displayTodos();
-        updateStats();
+        await loadAllStats(); // SPREMENJENO: Kličemo novo funkcijo za nalaganje statistike
         // Posodobi koledar, če je odprt
         if (calendarModal && calendarModal.style.display === 'flex') {
             renderCalendar();
@@ -145,7 +145,7 @@ async function handleSubmit(event) {
 
     const title = todoTitle.value.trim();
     const description = todoDescription.value.trim();
-    
+
     // Convert datetime-local v ISO format za backend
     let deadline = null;
     if (todoDeadline.value) {
@@ -210,7 +210,7 @@ function editTodo(id) {
     editingId = id;
     todoTitle.value = todo.title;
     todoDescription.value = todo.description || '';
-    
+
     // Format za deadline datetime-local vnos je (YYYY-MM-DDTHH:mm)
     if (todo.deadline) {
         const deadlineDate = new Date(todo.deadline);
@@ -223,7 +223,7 @@ function editTodo(id) {
     } else {
         todoDeadline.value = '';
     }
-    
+
     submitBtn.innerHTML = '<i class="fas fa-save"></i> Shrani spremembe';
     cancelEditBtn.style.display = 'flex';
     todoTitle.focus();
@@ -244,7 +244,7 @@ function resetForm() {
     updateCharCounts();
 }
 
-// Brisanje z
+// Brisanje z modalnim oknom
 function showDeleteModal(id) {
     deleteTodoId = id;
     deleteModal.style.display = 'flex';
@@ -280,13 +280,98 @@ function handleSearch() {
     displayTodos();
 }
 
-// prikaz statistike nalog
-function updateStats() {
-    const total = todos.length;
-    const completed = todos.filter(t => t.completed).length;
-    const active = total - completed;
+/**
+ * Naloži vse statistike (splošno in za zadnjih 7 dni)
+ */
+async function loadAllStats() {
+    try {
+        // Splošna statistika
+        const generalStats = await apiCall(`${API_BASE}/stats`);
 
-    todoStats.textContent = `${active} aktivnih, ${completed} opravljenih, ${total} skupaj`;
+        // Statistika za zadnjih 7 dni - brez parametrov, backend bo uporabil zadnjih 7 dni
+        const weekStats = await apiCall(`${API_BASE}/stats/period`);
+
+        displayStats(generalStats, weekStats);
+    } catch (error) {
+        console.error('Napaka pri nalaganju statistike:', error);
+        if (statsContainer) {
+            statsContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #ef4444;">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Napaka pri nalaganju statistike: ${error.message}
+                </div>
+            `;
+        }
+    }
+}
+
+/**
+ * Prikaže statistiko v obliki kartic
+ */
+function displayStats(generalStats, weekStats) {
+    if (!statsContainer) return;
+
+    const generalAvg = Math.round(generalStats.averageTaskDurationMinutes);
+    const generalPercent = generalStats.completedPercentage.toFixed(1);
+
+    const weekAvg = Math.round(weekStats.averageTaskDurationMinutes);
+    const weekPercent = weekStats.completedPercentage.toFixed(1);
+
+    statsContainer.innerHTML = `
+        <div class="stats-cards">
+            <div class="stats-card">
+                <h3><i class="fas fa-chart-line"></i> Splošna statistika</h3>
+                <div class="stats-content">
+                    <div class="stats-row">
+                        <span>Skupaj nalog:</span>
+                        <strong>${generalStats.totalTasks}</strong>
+                    </div>
+                    <div class="stats-row completed">
+                        <span>Opravljenih:</span>
+                        <strong>${generalStats.completedTasks}</strong>
+                    </div>
+                    <div class="stats-row active">
+                        <span>Aktivnih:</span>
+                        <strong>${generalStats.totalTasks - generalStats.completedTasks}</strong>
+                    </div>
+                    <div class="stats-row">
+                        <span>% opravljenih:</span>
+                        <strong>${generalPercent}%</strong>
+                    </div>
+                    <div class="stats-row">
+                        <span>Povprečen čas:</span>
+                        <strong>${generalAvg} min</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <h3><i class="fas fa-calendar-week"></i> Zadnjih 7 dni</h3>
+                <div class="stats-content">
+                    <div class="stats-row">
+                        <span>Skupaj nalog:</span>
+                        <strong>${weekStats.totalTasks}</strong>
+                    </div>
+                    <div class="stats-row completed">
+                        <span>Opravljenih:</span>
+                        <strong>${weekStats.completedTasks}</strong>
+                    </div>
+                    <div class="stats-row active">
+                        <span>Aktivnih:</span>
+                        <strong>${weekStats.totalTasks - weekStats.completedTasks}</strong>
+                    </div>
+                    <div class="stats-row">
+                        <span>% opravljenih:</span>
+                        <strong>${weekPercent}%</strong>
+                    </div>
+                    <div class="stats-row">
+                        <span>Povprečen čas:</span>
+                        <strong>${weekAvg} min</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Spremljanje dolžine vnosa
@@ -318,9 +403,6 @@ function showEmptyState() { emptyState.style.display = 'block'; noResults.style.
 function showNoResults() { noResults.style.display = 'block'; emptyState.style.display = 'none'; todosList.innerHTML = ''; }
 function hideEmptyStates() { emptyState.style.display = 'none'; noResults.style.display = 'none'; }
 
-// -----------------------
-// NOVO: Drag & Drop funkcionalnost za reschedule
-// -----------------------
 
 /**
  * Prestavi nalogo na nov datum preko API-ja.
@@ -424,21 +506,21 @@ function hideCalendar() {
 async function renderCalendar() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth() + 1; // JavaScript meseci so 0-based, backend sprememba zaradi backenda v 1-12
-    
+
     // Nastavi naslov meseca
-    const monthNames = ['Januar', 'Februar', 'Marec', 'April', 'Maj', 'Junij', 
-                       'Julij', 'Avgust', 'September', 'Oktober', 'November', 'December'];
+    const monthNames = ['Januar', 'Februar', 'Marec', 'April', 'Maj', 'Junij',
+        'Julij', 'Avgust', 'September', 'Oktober', 'November', 'December'];
     calendarMonthYear.textContent = `${monthNames[month - 1]} ${year}`;
-    
+
     // Prvi dan v mesecu
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay(); // 0 = nedelja, 1 = ponedeljek, ...
-    
+
     // 0 = ponedeljek
     const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
-    
+
     // Pridobi naloge za trenutni mesec iz backend-a
     let monthTodos = [];
     try {
@@ -447,10 +529,10 @@ async function renderCalendar() {
         console.error('Error loading calendar todos:', error);
         showError('Napaka pri nalaganju koledarskih podatkov: ' + error.message);
     }
-    
+
     // Ustvari koledar
     let calendarHTML = '<div class="calendar-grid">';
-    
+
     // Dnevi v tednu skrajšani
     const dayNames = ['Pon', 'Tor', 'Sre', 'Čet', 'Pet', 'Sob', 'Ned'];
     calendarHTML += '<div class="calendar-weekdays">';
@@ -458,13 +540,13 @@ async function renderCalendar() {
         calendarHTML += `<div class="calendar-weekday">${day}</div>`;
     });
     calendarHTML += '</div>';
-    
+
     // Prazne celice za prvi dan
     calendarHTML += '<div class="calendar-days">';
     for (let i = 0; i < adjustedStartingDay; i++) {
         calendarHTML += '<div class="calendar-day empty"></div>';
     }
-    
+
     // Dnevi v mesecu
     for (let day = 1; day <= daysInMonth; day++) {
         const currentDate = new Date(year, month - 1, day); // month - 1 ker je JavaScript 0-based
@@ -474,13 +556,13 @@ async function renderCalendar() {
             const deadlineDate = new Date(todo.deadline);
             return deadlineDate.getDate() === day;
         });
-        
+
         const isToday = currentDate.toDateString() === new Date().toDateString();
         const isPast = currentDate < new Date() && !isToday;
-        
+
         calendarHTML += `<div class="calendar-day ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}" data-date="${dateStr}">`;
         calendarHTML += `<div class="calendar-day-number">${day}</div>`;
-        
+
         if (dayTodos.length > 0) {
             calendarHTML += '<div class="calendar-todos">';
             dayTodos.slice(0, 3).forEach(todo => {
@@ -498,16 +580,16 @@ async function renderCalendar() {
             }
             calendarHTML += '</div>';
         }
-        
+
         calendarHTML += '</div>';
     }
-    
+
     calendarHTML += '</div></div>';
     calendarContainer.innerHTML = calendarHTML;
 
     // Dodan drag and drop event listener
     setupDragAndDrop();
-    
+
     // Dodaj event listener-je za klik na dan
     setupDayClickListeners();
 }
@@ -583,7 +665,7 @@ async function changeMonth(direction) {
  */
 function setupDayClickListeners() {
     const dayElements = calendarContainer.querySelectorAll('.calendar-day:not(.empty)');
-    
+
     dayElements.forEach(dayEl => {
         // Prepreči, da bi klik na nalogo odprl modal (ker je naloga draggable)
         dayEl.addEventListener('click', (e) => {
@@ -591,7 +673,7 @@ function setupDayClickListeners() {
             if (e.target.closest('.calendar-todo')) {
                 return;
             }
-            
+
             const dateStr = dayEl.dataset.date;
             if (dateStr) {
                 showDayTasks(dateStr);
@@ -609,34 +691,34 @@ async function showDayTasks(dateStr) {
     try {
         // Prikaži modal
         dayTasksModal.style.display = 'flex';
-        
+
         // Formatiraj datum za prikaz
         const date = new Date(dateStr + 'T12:00:00');
-        const dateFormatted = date.toLocaleDateString('sl-SI', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        const dateFormatted = date.toLocaleDateString('sl-SI', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
         dayTasksDate.textContent = dateFormatted;
-        
+
         // Filtriraj naloge za izbrani dan
         const dayTodos = todos.filter(todo => {
             if (!todo.deadline) return false;
-            
+
             const deadlineDate = new Date(todo.deadline);
             const deadlineDateStr = `${deadlineDate.getFullYear()}-${String(deadlineDate.getMonth() + 1).padStart(2, '0')}-${String(deadlineDate.getDate()).padStart(2, '0')}`;
-            
+
             return deadlineDateStr === dateStr;
         });
-        
+
         // Razvrsti naloge po času roka (najprej najzgodnejše)
         dayTodos.sort((a, b) => {
             const timeA = new Date(a.deadline).getTime();
             const timeB = new Date(b.deadline).getTime();
             return timeA - timeB;
         });
-        
+
         // Prikaži naloge ali prazno stanje
         if (dayTodos.length === 0) {
             dayTasksList.style.display = 'none';
@@ -644,16 +726,16 @@ async function showDayTasks(dateStr) {
         } else {
             dayTasksEmpty.style.display = 'none';
             dayTasksList.style.display = 'block';
-            
+
             // Generiraj HTML za naloge
             dayTasksList.innerHTML = dayTodos.map(todo => {
                 const deadlineDate = new Date(todo.deadline);
-                const timeStr = deadlineDate.toLocaleTimeString('sl-SI', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+                const timeStr = deadlineDate.toLocaleTimeString('sl-SI', {
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
                 const overdue = deadlineDate < new Date() && !todo.completed;
-                
+
                 return `
                     <div class="day-task-item ${todo.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}">
                         <div class="day-task-time">

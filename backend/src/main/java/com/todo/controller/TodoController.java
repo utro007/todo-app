@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.todo.dto.ProductivityStatsDTO;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 
 import java.util.List;
@@ -198,5 +201,41 @@ public class TodoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Vrne statistiko produktivnosti za izbrano časovno obdobje
+     */
+    @GetMapping("/stats/period")
+    public ResponseEntity<ProductivityStatsDTO> getProductivityStatsByPeriod(
+            @RequestParam(required = false) // SPREMENJENO: Naredimo parametre opcijske
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime from,
+
+            @RequestParam(required = false) // SPREMENJENO: Naredimo parametre opcijske
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime to
+    ) {
+        try {
+            // DODANO: Če parametri niso podani, uporabimo zadnjih 7 dni
+            if (from == null || to == null) {
+                to = LocalDateTime.now();
+                from = to.minusDays(7);
+            }
+
+            if (from.isAfter(to)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            ProductivityStatsDTO stats =
+                    todoService.getProductivityStatsByPeriod(from, to);
+
+            return ResponseEntity.ok(stats);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // DODANO: Za debug
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

@@ -75,6 +75,22 @@ app.get('/api/todos/calendar', async (req, res) => {
     }
 });
 
+// Statistika po obdobjih (T7) – MORA BITI PRED /:id
+app.get('/api/todos/stats/period', async (req, res) => {
+    try {
+        console.log('Fetching period stats from backend...');
+        const response = await axios.get(`${BACKEND_URL}/api/todos/stats/period`);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching period stats:', error.message);
+        res.status(500).json({
+            error: 'Failed to fetch period stats',
+            details: error.message
+        });
+    }
+});
+
+
 // Pridobi nalogo po ID
 app.get('/api/todos/:id', async (req, res) => {
     try {

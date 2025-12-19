@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
-import com.todo.dto.ProductivityStatsDTO;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import com.todo.dto.ProductivityStatsDTO;
+
 
 
 /**
@@ -133,6 +135,31 @@ public class TodoService {
         List<Todo> todos = todoRepository.findAll();
 
         long totalTasks = todos.size();
+        long completedTasks = todos.stream()
+                .filter(t -> Boolean.TRUE.equals(t.getCompleted()))
+                .count();
+
+        double completedPercentage = 0;
+        if (totalTasks > 0) {
+            completedPercentage = ((double) completedTasks / totalTasks) * 100;
+        }
+
+        return new ProductivityStatsDTO(
+                0, // povprečni čas bo 0 dokler nimaš completedAt
+                completedPercentage,
+                totalTasks,
+                completedTasks
+        );
+    }
+
+    public ProductivityStatsDTO getProductivityStatsByPeriod(
+            LocalDateTime from,
+            LocalDateTime to
+    ) {
+
+        List<Todo> todos = todoRepository.findByCreatedAtBetween(from, to);
+
+        long totalTasks = todos.size();
 
         List<Todo> completedTodos = todos.stream()
                 .filter(t -> Boolean.TRUE.equals(t.getCompleted()))
@@ -146,7 +173,10 @@ public class TodoService {
         if (completedTasks > 0) {
             averageDurationMinutes = completedTodos.stream()
                     .mapToLong(t ->
-                            Duration.between(t.getCreatedAt(), t.getCompletedAt()).toMinutes()
+                            Duration.between(
+                                    t.getCreatedAt(),
+                                    t.getCompletedAt()
+                            ).toMinutes()
                     )
                     .average()
                     .orElse(0);
@@ -164,5 +194,6 @@ public class TodoService {
                 completedTasks
         );
     }
+
 
 }
