@@ -207,16 +207,16 @@ public class TodoController {
      */
     @GetMapping("/stats/period")
     public ResponseEntity<ProductivityStatsDTO> getProductivityStatsByPeriod(
-            @RequestParam(required = false) // SPREMENJENO: Naredimo parametre opcijske
+            @RequestParam(required = false) // Naredimo parametre opcijske
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime from,
 
-            @RequestParam(required = false) // SPREMENJENO: Naredimo parametre opcijske
+            @RequestParam(required = false) // Naredimo parametre opcijske
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime to
     ) {
         try {
-            // DODANO: Če parametri niso podani, uporabimo zadnjih 7 dni
+            // Uporabimo zadnjih 7 dni
             if (from == null || to == null) {
                 to = LocalDateTime.now();
                 from = to.minusDays(7);

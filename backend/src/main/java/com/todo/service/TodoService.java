@@ -135,9 +135,27 @@ public class TodoService {
         List<Todo> todos = todoRepository.findAll();
 
         long totalTasks = todos.size();
-        long completedTasks = todos.stream()
+
+        List<Todo> completedTodos = todos.stream()
                 .filter(t -> Boolean.TRUE.equals(t.getCompleted()))
-                .count();
+                .filter(t -> t.getCompletedAt() != null)
+                .toList();
+
+        long completedTasks = completedTodos.size();
+
+        double averageDurationMinutes = 0;
+
+        if (completedTasks > 0) {
+            averageDurationMinutes = completedTodos.stream()
+                    .mapToLong(t ->
+                            Duration.between(
+                                    t.getCreatedAt(),
+                                    t.getCompletedAt()
+                            ).toMinutes()
+                    )
+                    .average()
+                    .orElse(0);
+        }
 
         double completedPercentage = 0;
         if (totalTasks > 0) {
@@ -145,7 +163,7 @@ public class TodoService {
         }
 
         return new ProductivityStatsDTO(
-                0, // povprečni čas bo 0 dokler nimaš completedAt
+                averageDurationMinutes,
                 completedPercentage,
                 totalTasks,
                 completedTasks
