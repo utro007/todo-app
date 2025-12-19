@@ -15,7 +15,7 @@ const app = express();
 
 // Vrata in naslov backend storitve (nastavljivo preko okolja)
 const PORT = process.env.PORT || 3000;
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8081';
 
 
 /* --------------------------------------------------
