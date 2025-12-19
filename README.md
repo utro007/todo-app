@@ -793,7 +793,7 @@ Poročilo o testiranju je na voljo v mapi [`testiranje/porocilo_testiranja.md`](
 
 ## 13. SCRUM
 
-Vse potrebno glede poteka dela, procesa in implementacije se najde v folderju implementacija v scrum_porocilo.md
+Vse potrebno glede poteka dela, procesa in implementacije se najde v `implementacija/scrum_porocilo.md/`
 
 ---
 
