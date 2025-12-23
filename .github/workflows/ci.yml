@@ -55,7 +55,7 @@ jobs:
           chmod +x ./mvnw
           ./mvnw test
         env:
-          # Prisilimo Spring, da uporabi H2 namesto MySQL
+          # Uporaba H2
           SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
           SPRING_DATASOURCE_USERNAME: sa
