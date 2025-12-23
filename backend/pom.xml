@@ -56,7 +56,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    <!-- H2 Database for testing (in-memory, no external DB needed) -->
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>test</scope>
+    </dependency>
     <build>
         <plugins>
             <plugin>
