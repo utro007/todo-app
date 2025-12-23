@@ -797,3 +797,50 @@ Vse potrebno glede poteka dela, procesa in implementacije se najde v `implementa
 
 ---
 
+## 14. CI/CD Cevovodi
+
+### 14.1. Opis
+
+Dodano **Github Actions**, za avtomatsko gradnjo in testiranje aplikacije. Cevovodi se avtomatsko sprožijo ob vsakem push ali pull request na `main` vejo.
+
+### 14.2. Lokacija
+
+Workflow datoteka se nahaja v:
+- `.github/workflows/ci.yml`
+
+### 14.3. Struktura cevovoda
+
+Cevovod je sestavljen iz treh nalog, ki se izvajajo zaporedno:
+
+#### Naloga 1: Build Backend
+- **Namen:** Zgradi backend aplikacijo (Java 17 + Maven)
+- **Koraki:**
+  1. Checkout kode iz repozitorija
+  2. Nastavitev Java 17 (Temurin distribucija)
+  3. Gradnja backenda z Maven (`mvnw clean compile -DskipTests`)
+
+#### Naloga 2: Build Frontend
+- **Namen:** Zgradi frontend aplikacijo (Node.js 18)
+- **Odvisnost:** Čaka na uspešno gradnjo backenda (`needs: build-backend`)
+- **Koraki:**
+  1. Checkout kode
+  2. Nastavitev Node.js 18
+  3. Namestitev odvisnosti (`npm ci`)
+  4. Gradnja frontenda (`npm run build --if-present`)
+
+#### Naloga 3: Test Backend
+- **Namen:** Zažene unit teste za backend
+- **Odvisnost:** Čaka na uspešno gradnjo backenda (`needs: build-backend`)
+- **Koraki:**
+  1. Checkout kode
+  2. Nastavitev Java 17
+  3. Zagon Maven testov (`mvnw test`)
+- **Baza podatkov:** Uporablja H2 in-memory bazo
+
+### 14.4. Lokalno testiranje
+
+Za lokalno testiranje uporabite:
+```bash
+cd backend
+.\mvnw.cmd test
+```
