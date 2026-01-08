@@ -63,6 +63,7 @@ public class TodoService {
             existingTodo.setDescription(todoDetails.getDescription());
             existingTodo.setCompleted(todoDetails.getCompleted());
             existingTodo.setDeadline(todoDetails.getDeadline());
+            existingTodo.setImage(todoDetails.getImage());
 
             return todoRepository.save(existingTodo);
         }
