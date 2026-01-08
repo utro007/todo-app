@@ -65,6 +65,13 @@ public class Todo {
     @Column(name = "deadline")
     private LocalDateTime deadline;
 
+    /**
+     * Slika naloge (opcijsko) - shranjena kot Base64 string
+     * LONGTEXT za shranjevanje velikih slik
+     */
+    @Column(name = "image", columnDefinition = "LONGTEXT")
+    private String image;
+
     // Konstruktorji
 
     public Todo() {
@@ -168,6 +175,15 @@ public class Todo {
 
     public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
         this.updatedAt = LocalDateTime.now();
     }
 
