@@ -495,19 +495,34 @@ function hideAttachmentViewer() {
     currentAttachmentData = null;
 }
 
+/**
+ * Prenese trenutno odprto prilogo na računalnik
+ */
 function downloadAttachment() {
-    if (!currentAttachmentData) return;
+    if (!currentAttachmenstData) {
+        showNotification('Ni podatkov za prenos', 'error');
+        return;
+    }
 
-    const link = document.createElement('a');
-    link.href = currentAttachmentData.data;
-    link.download = currentAttachmentData.fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+        // Ustvarimo začasni "navidezni" gumb za prenos
+        const link = document.createElement('a');
+        link.href = currentAttachmenstData;
 
-    showNotification('Datoteka prenešena', 'success');
+        // Določimo končnico glede na tip podatkov
+        const isPdf = currentAttachmenstData.includes('application/pdf');
+        link.download = isPdf ? `priloga_${Date.now()}.pdf` : `slika_${Date.now()}.jpg`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showNotification('Prenos se je začel', 'success');
+    } catch (e) {
+        console.error('Napaka pri prenosu:', e);
+        showError('Prenos ni uspel.');
+    }
 }
-
 async function deleteAttachment(event, todoId, type) {
     event.stopPropagation();
 

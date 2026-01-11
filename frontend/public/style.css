@@ -1179,37 +1179,38 @@ input[type="file"]::file-selector-button:hover {
     background: rgba(220, 38, 38, 1);
 }
 
-/* Attachment Viewer Modal */
+/* Povečano modalno okno za priloge */
 .attachment-viewer-modal {
-    max-width: 90vw;
-    max-height: 90vh;
-    width: auto;
-}
-
-.attachment-content {
-    max-height: calc(90vh - 200px);
-    overflow: auto;
+    width: 95% !important; /* Zavzame skoraj celo širino */
+    max-width: 1200px !important; /* Ampak ne več kot 1200px */
+    height: 90vh; /* Višina 90% zaslona */
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 20px;
+    flex-direction: column;
 }
 
-.attachment-content img {
-    max-width: 100%;
-    max-height: calc(90vh - 250px);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+/* Prilagoditev vsebine v oknu */
+.attachment-content {
+    flex-grow: 1; /* Zavzame ves razpoložljiv prostor v modalu */
+    height: 100%;
+    min-height: 500px;
+    overflow: hidden; /* Skrijemo scroll modala, ker ga bo imel iframe/slika */
+    padding: 10px;
+    background: #f1f5f9;
 }
 
+/* Posebna prilagoditev za PDF (iframe) */
 .attachment-content iframe {
     width: 100%;
-    height: calc(90vh - 250px);
+    height: 100%; /* PDF se zdaj raztegne čez celo višino modala */
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+/* Posebna prilagoditev za slike */
+.attachment-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Sliko ohrani v razmerju, a jo poveča */
 }
 
 /* Loading spinner za priloge */
