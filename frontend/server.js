@@ -22,8 +22,8 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8081';
    Middleware konfiguracija
 -------------------------------------------------- */
 app.use(cors()); // Dovoli zahteve iz drugih domen (npr. frontend -> backend)
-app.use(bodyParser.json()); // Podpora za JSON telo zahtev
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Serviraj UI iz mape /public
 
 
@@ -199,15 +199,24 @@ app.get('/api/todos/:id', async (req, res) => {
 // Ustvari novo nalogo
 app.post('/api/todos', async (req, res) => {
     try {
-        const { title, description, completed = false, deadline } = req.body;
-        console.log('Creating new todo:', { title, description, completed, deadline });
+        const { title, description, completed = false, deadline, image, pdf } = req.body;
+
+        console.log('Creating new todo:', {
+            title,
+            hasImage: !!image,
+            hasPdf: !!pdf,
+            deadline
+        });
 
         const response = await axios.post(`${BACKEND_URL}/api/todos`, {
             title,
             description,
             completed,
-            deadline
+            deadline,
+            image, // <-- NUJNO DODANO
+            pdf    // <-- NUJNO DODANO
         });
+
         res.status(201).json(response.data);
     } catch (error) {
         console.error('Error creating todo:', error.message);
@@ -225,31 +234,43 @@ app.post('/api/todos', async (req, res) => {
 app.put('/api/todos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, completed, deadline } = req.body;
-        console.log(`Updating todo ${id}:`, { title, description, completed, deadline });
+
+        const { title, description, completed, deadline, image, pdf } = req.body;
+
+        console.log(`Updating todo ${id}:`, {
+            title,
+            completed,
+            hasImage: !!image, // Izpiše true, če slika obstaja
+            hasPdf: !!pdf      // Izpiše true, če PDF obstaja
+        });
 
         const response = await axios.put(`${BACKEND_URL}/api/todos/${id}`, {
             title,
             description,
             completed,
-            deadline
+            deadline,
+            image, // <-- NUJNO: pošljemo sliko
+            pdf    // <-- NUJNO: pošljemo PDF
         });
+
         res.json(response.data);
     } catch (error) {
         console.error('Error updating todo:', error.message);
+
         if (error.response?.status === 404) {
             return res.status(404).json({ error: 'Todo not found' });
         }
+
         if (error.response) {
             console.error('Backend response:', error.response.data);
         }
+
         res.status(error.response?.status || 500).json({
             error: 'Failed to update todo',
             details: error.response?.data || error.message
         });
     }
 });
-
 // Izbriši nalogo
 app.delete('/api/todos/:id', async (req, res) => {
     try {

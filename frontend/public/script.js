@@ -3,7 +3,7 @@ let editingId = null;        // ID naloge, ki jo trenutno urejamo (null = dodaja
 let currentFilter = 'all';   // Trenutni filter prikaza ('all', 'active', 'completed')
 let deleteTodoId = null;     // ID naloge, ki je označena za brisanje (pred potrditvijo)
 let currentCalendarDate = new Date(); // Trenutni datum za koledarski prikaz
-
+let currentAttachmenstData = null //Za viewer
 
 // Pridobivanje referenc
 
@@ -39,7 +39,12 @@ const dayTasksDate = document.getElementById('dayTasksDate');
 const dayTasksList = document.getElementById('dayTasksList');
 const dayTasksEmpty = document.getElementById('dayTasksEmpty');
 const statsContainer = document.getElementById('statsContainer');
-
+const attachmentModal = document.getElementById('attachmentModal');
+const closeAttachmentBtn = document.getElementById('closeAttachmentBtn');
+const attachmentContent = document.getElementById('attachmentContent');
+const attachmentTitle = document.getElementById('attachmentTitle');
+const downloadAttachmentBtn = document.getElementById('downloadAttachmentBtn');
+const todoAttachment = document.getElementById('todoAttachment');
 // Osnova API-ja
 const API_BASE = '/api/todos';
 
@@ -81,104 +86,169 @@ async function loadTodos() {
 }
 
 // Prikaz nalog glede na filter in iskalni niz
+/**
+ * Osveži prikaz seznama nalog na strani
+ * - Filtrira naloge glede na trenutni filter
+ * - Razvrsti naloge
+ * - Generira HTML za vsako nalogo (vključno s prilogami)
+ */
 function displayTodos() {
-    hideLoading();
-
-    const searchTerm = searchInput.value.toLowerCase();
-
+    // 1. Filtriranje nalog
     const filteredTodos = todos.filter(todo => {
-        const matchesSearch =
-            todo.title.toLowerCase().includes(searchTerm) ||
-            (todo.description && todo.description.toLowerCase().includes(searchTerm));
-
-        const matchesFilter =
-            currentFilter === 'all' ||
-            (currentFilter === 'active' && !todo.completed) ||
-            (currentFilter === 'completed' && todo.completed);
-
-        return matchesSearch && matchesFilter;
+        if (currentFilter === 'active') return !todo.completed;
+        if (currentFilter === 'completed') return todo.completed;
+        return true;
     });
 
-    if (filteredTodos.length === 0) {
-        todos.length === 0 ? showEmptyState() : showNoResults();
+    const searchTerm = searchInput.value.toLowerCase();
+    const searchedTodos = filteredTodos.filter(todo =>
+        todo.title.toLowerCase().includes(searchTerm) ||
+        (todo.description && todo.description.toLowerCase().includes(searchTerm))
+    );
+
+    searchedTodos.sort((a, b) => {
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        if (a.deadline && b.deadline) return new Date(a.deadline) - new Date(b.deadline);
+        return b.id - a.id;
+    });
+
+    if (todos.length === 0) {
+        emptyState.style.display = 'block';
+        noResults.style.display = 'none';
+        todosList.innerHTML = '';
+        return;
+    } else if (searchedTodos.length === 0) {
+        emptyState.style.display = 'none';
+        noResults.style.display = 'block';
+        todosList.innerHTML = '';
         return;
     }
 
-    hideEmptyStates();
+    emptyState.style.display = 'none';
+    noResults.style.display = 'none';
 
-    // Generiranje HTML-ja za prikaz nalog
-    todosList.innerHTML = filteredTodos.map(todo => {
-        const deadlineClass = todo.deadline && new Date(todo.deadline) < new Date() && !todo.completed ? 'deadline-overdue' : '';
-        const deadlineDisplay = todo.deadline ? `<span class="todo-deadline ${deadlineClass}"><i class="fas fa-calendar-alt"></i> Rok: ${formatDate(todo.deadline)}</span>` : '';
-        return `
-        <div class="todo-item ${todo.completed ? 'completed' : ''}" id="todo-${todo.id}">
-            <div class="todo-checkbox">
-                <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+    todosList.innerHTML = searchedTodos.map(todo => {
+        const deadlineDate = todo.deadline ? new Date(todo.deadline) : null;
+        const isOverdue = deadlineDate && deadlineDate < new Date() && !todo.completed;
+
+        const deadlineDisplay = deadlineDate ? `
+            <div class="todo-deadline ${isOverdue ? 'overdue' : ''}">
+                <i class="far fa-clock"></i> Rok: ${deadlineDate.toLocaleString('sl-SI')}
             </div>
+        ` : '';
 
-            <div class="todo-content">
-                <div class="todo-title">${escapeHtml(todo.title)}</div>
-                ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
-                ${deadlineDisplay}
-                <div class="todo-meta">
-                    <span>Ustvarjeno: ${formatDate(todo.createdAt)}</span>
-                    ${todo.updatedAt !== todo.createdAt ? `<span>Posodobljeno: ${formatDate(todo.updatedAt)}</span>` : ''}
+        // PRILOGE: Preverimo, kateri stolpec v bazi ima podatke
+        let attachmentHtml = '';
+        if (todo.image) {
+            attachmentHtml = `
+                <div class="attachment-tag" onclick="viewAttachment(${todo.id}, 'image')" style="cursor:pointer; color: #4f46e5; margin-top: 8px;">
+                    <i class="fas fa-image"></i> Poglej sliko
+                </div>`;
+        } else if (todo.pdf) {
+            attachmentHtml = `
+                <div class="attachment-tag" onclick="viewAttachment(${todo.id}, 'pdf')" style="cursor:pointer; color: #ef4444; margin-top: 8px;">
+                    <i class="fas fa-file-pdf"></i> Odpri PDF dokument
+                </div>`;
+        }
+
+        return `
+            <div class="todo-item ${todo.completed ? 'completed' : ''}" id="todo-${todo.id}">
+                <div class="todo-checkbox" onclick="toggleTodo(${todo.id})">
+                    <i class="${todo.completed ? 'fas fa-check-circle' : 'far fa-circle'}"></i>
+                </div>
+                
+                <div class="todo-content">
+                    <div class="todo-title">${escapeHtml(todo.title)}</div>
+                    ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
+                    ${deadlineDisplay}
+                    ${attachmentHtml} <div class="todo-meta">
+                        <span><i class="far fa-calendar-plus"></i> ${new Date(todo.createdAt).toLocaleDateString('sl-SI')}</span>
+                    </div>
+                </div>
+
+                <div class="todo-actions">
+                    <button class="btn-icon btn-edit" onclick="editTodo(${todo.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" onclick="confirmDelete(${todo.id})">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
-
-            <div class="todo-actions">
-                <button class="btn btn-warning" onclick="editTodo(${todo.id})" ${todo.completed ? 'disabled' : ''}>
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-danger" onclick="showDeleteModal(${todo.id})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `;
+        `;
     }).join('');
 }
 
+// Pretvori datoteko v Base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const maxSize = 50 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            reject(new Error('Datoteka je prevelika (max 5MB)'));
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Napaka pri branju datoteke'));
+        reader.readAsDataURL(file);
+    });
+}
+
 // Obdelava oddaje obrazca (dodajanje ali posodabljanje naloge)
+/**
+ * Obdelava oddaje obrazca (dodajanje ali posodabljanje naloge)
+ */
 async function handleSubmit(event) {
     event.preventDefault();
 
     const title = todoTitle.value.trim();
     const description = todoDescription.value.trim();
-
-    // Convert datetime-local v ISO format za backend
-    let deadline = null;
-    if (todoDeadline.value) {
-        // datetime-local vrne "YYYY-MM-DDTHH:mm"
-        const date = new Date(todoDeadline.value);
-        deadline = date.toISOString();
-    }
+    const fileInput = document.getElementById('todoAttachments'); // Prepričaj se, da je ID pravi
+    const files = fileInput ? Array.from(fileInput.files) : [];
 
     if (!title) {
         showError('Vnesite naslov naloge');
-        todoTitle.focus();
         return;
     }
 
+    let deadline = todoDeadline.value ? new Date(todoDeadline.value).toISOString() : null;
+
     try {
         hideError();
+        if (loading) loading.style.display = 'block';
 
+        // Priprava podatkov
         const todoData = {
             title,
             description,
-            deadline: deadline
+            deadline: deadline,
+            image: null,
+            pdf: null
         };
 
+        // Razvrščanje datotek (vzame prvo sliko in prvi PDF)
+        if (todoAttachment && todoAttachment.files.length > 0) {
+            const file = todoAttachment.files[0];
+            console.log("Zaznana datoteka:", file.name, file.type); // Za debug v brskalniku
+
+            const base64String = await fileToBase64(file); // POČAKAJ na pretvorbo!
+
+            if (file.type.startsWith('image/')) {
+                todoData.image = base64String;
+            } else if (file.type === 'application/pdf') {
+                todoData.pdf = base64String;
+            }
+        }
+        console.log("Pošiljam podatke:", todoData);
+
         if (editingId) {
-            // Posodobitev obstoječe naloge
             todoData.completed = todos.find(t => t.id === editingId)?.completed || false;
             await apiCall(`${API_BASE}/${editingId}`, {
                 method: 'PUT',
                 body: JSON.stringify(todoData)
             });
         } else {
-            // Ustvarjanje nove naloge
-            todoData.completed = false;
             await apiCall(API_BASE, {
                 method: 'POST',
                 body: JSON.stringify(todoData)
@@ -186,9 +256,12 @@ async function handleSubmit(event) {
         }
 
         resetForm();
+        if (fileInput) fileInput.value = '';
         await loadTodos();
     } catch (error) {
-        showError('Napaka pri shranjevanju naloge: ' + error.message);
+        showError('Napaka: ' + error.message);
+    } finally {
+        if (loading) loading.style.display = 'none';
     }
 }
 
@@ -372,6 +445,99 @@ function displayStats(generalStats, weekStats) {
             </div>
         </div>
     `;
+}
+
+/**
+ * Odpre vgrajeni pregledovalnik za slike ali PDF
+ */
+function viewAttachment(id, type) {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    const modal = document.getElementById('attachmentModal');
+    const content = document.getElementById('attachmentContent');
+    const title = document.getElementById('attachmentTitle');
+    const downloadBtn = document.getElementById('downloadAttachmentBtn');
+
+    content.innerHTML = ''; // Počisti prejšnjo vsebino
+    currentAttachmenstData = null;
+
+    if (type === 'image' && todo.image) {
+        title.innerHTML = '<i class="fas fa-image"></i> Pregled slike';
+
+        const img = document.createElement('img');
+        img.src = todo.image; // Base64 niz že vsebuje "data:image/..."
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '8px';
+        content.appendChild(img);
+
+        currentAttachmenstData = todo.image;
+    }
+    else if (type === 'pdf' && todo.pdf) {
+        title.innerHTML = '<i class="fas fa-file-pdf"></i> Pregled PDF dokumenta';
+
+        const iframe = document.createElement('iframe');
+        iframe.src = todo.pdf;
+        iframe.style.width = '100%';
+        iframe.style.height = '500px';
+        iframe.style.border = 'none';
+        content.appendChild(iframe);
+
+        currentAttachmenstData = todo.pdf;
+    }
+
+    // Prikaži modalno okno
+    modal.style.display = 'flex';
+}
+
+function hideAttachmentViewer() {
+    attachmentModal.style.display = 'none';
+    currentAttachmentData = null;
+}
+
+function downloadAttachment() {
+    if (!currentAttachmentData) return;
+
+    const link = document.createElement('a');
+    link.href = currentAttachmentData.data;
+    link.download = currentAttachmentData.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showNotification('Datoteka prenešena', 'success');
+}
+
+async function deleteAttachment(event, todoId, type) {
+    event.stopPropagation();
+
+    if (!confirm(`Ali ste prepričani, da želite izbrisati ${type === 'image' ? 'sliko' : 'PDF'}?`)) {
+        return;
+    }
+
+    try {
+        const todo = todos.find(t => t.id === todoId);
+        if (!todo) return;
+
+        const todoData = {
+            title: todo.title,
+            description: todo.description,
+            completed: todo.completed,
+            deadline: todo.deadline,
+            image: type === 'image' ? null : todo.image,
+            pdf: type === 'pdf' ? null : todo.pdf
+        };
+
+        await apiCall(`${API_BASE}/${todoId}`, {
+            method: 'PUT',
+            body: JSON.stringify(todoData)
+        });
+
+        await loadTodos();
+        showNotification('Priloga izbrisana', 'success');
+    } catch (error) {
+        showError('Napaka pri brisanju priloge: ' + error.message);
+    }
 }
 
 // Spremljanje dolžine vnosa
@@ -782,10 +948,14 @@ document.addEventListener('DOMContentLoaded', function() {
     prevMonthBtn.addEventListener('click', () => changeMonth(-1));
     nextMonthBtn.addEventListener('click', () => changeMonth(1));
     closeDayTasksBtn.addEventListener('click', hideDayTasks);
+    closeAttachmentBtn.addEventListener('click', hideAttachmentViewer);
+    downloadAttachmentBtn.addEventListener('click', downloadAttachment);
 
     deleteModal.addEventListener('click', e => { if (e.target === deleteModal) hideDeleteModal(); });
     calendarModal.addEventListener('click', e => { if (e.target === calendarModal) hideCalendar(); });
     dayTasksModal.addEventListener('click', e => { if (e.target === dayTasksModal) hideDayTasks(); });
+    attachmentModal.addEventListener('click', e => { if (e.target === attachmentModal) hideAttachmentViewer(); });
+
 
     window.hideError = hideError; // omogoča zapiranje napak iz HTML-ja
     updateCharCounts();
@@ -798,6 +968,7 @@ document.addEventListener('keydown', function(event) {
         if (deleteModal.style.display === 'flex') hideDeleteModal();
         if (calendarModal.style.display === 'flex') hideCalendar();
         if (dayTasksModal.style.display === 'flex') hideDayTasks();
+        if (attachmentModal.style.display === 'flex') hideAttachmentViewer();
     }
 
     // Ctrl+K / Cmd+K → fokus na iskanje

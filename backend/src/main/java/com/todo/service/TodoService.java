@@ -13,8 +13,8 @@ import com.todo.dto.ProductivityStatsDTO;
 
 
 /**
-  Ta razred je vmes med kontrolerjem in repozitorijem
-  V njem izvajamo:
+ Ta razred je vmes med kontrolerjem in repozitorijem
+ V njem izvajamo:
  *  - validacije na nivoju aplikacije
  *  - pregled podatkov pred shranjevanjem
  *
@@ -64,6 +64,7 @@ public class TodoService {
             existingTodo.setCompleted(todoDetails.getCompleted());
             existingTodo.setDeadline(todoDetails.getDeadline());
             existingTodo.setImage(todoDetails.getImage());
+            existingTodo.setPdf(todoDetails.getPdf());
 
             return todoRepository.save(existingTodo);
         }

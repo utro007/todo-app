@@ -56,6 +56,14 @@
                 >
             </div>
 
+            <!-- Attachment upload -->
+            <div class="form-group">
+                <label for="todoAttachment" class="form-label">
+                    <i class="fas fa-paperclip"></i> Priloga (Slika ali PDF)
+                </label>
+                <input type="file" id="todoAttachment" class="form-input" accept="image/*,application/pdf">
+            </div>
+
             <!-- Gumbi za dodajanje ali preklic urejanja in koledar -->
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -200,6 +208,27 @@
             <i class="fas fa-calendar-check"></i>
             <h3>Ni nalog</h3>
             <p>Za ta dan ni načrtovanih nalog</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modalno okno za prikaz prilog -->
+<div id="attachmentModal" class="modal" style="display: none;">
+    <div class="modal-content attachment-viewer-modal">
+        <div class="calendar-header">
+            <h3 id="attachmentTitle">
+                <i class="fas fa-file"></i> Prikaz priloge
+            </h3>
+            <button class="modal-close" id="closeAttachmentBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="attachmentContent" class="attachment-content"></div>
+        <div class="modal-actions">
+            <button class="btn btn-info" id="downloadAttachmentBtn">
+                <i class="fas fa-download"></i> Prenesi
+            </button>
         </div>
     </div>
 </div>

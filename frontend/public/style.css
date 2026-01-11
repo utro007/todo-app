@@ -1044,6 +1044,186 @@ body {
     color: #f59e0b;
 }
 
+
+/* Pomoč za upload */
+.attachment-help {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+/* File input styling */
+input[type="file"] {
+    padding: 10px !important;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: #4338ca;
+}
+
+/* Attachment prikaz v todo item */
+.todo-attachments {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.todo-attachments-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.attachments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.attachment-item {
+    position: relative;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: white;
+}
+
+.attachment-item:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transform: translateY(-2px);
+}
+
+.attachment-preview {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.attachment-icon {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    font-size: 40px;
+    color: #dc2626;
+}
+
+.attachment-info {
+    padding: 8px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.attachment-name {
+    font-size: 11px;
+    color: #1f2937;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+.attachment-size {
+    font-size: 10px;
+    color: #64748b;
+}
+
+.attachment-delete {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.attachment-item:hover .attachment-delete {
+    opacity: 1;
+}
+
+.attachment-delete:hover {
+    background: rgba(220, 38, 38, 1);
+}
+
+/* Attachment Viewer Modal */
+.attachment-viewer-modal {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+}
+
+.attachment-content {
+    max-height: calc(90vh - 200px);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.attachment-content img {
+    max-width: 100%;
+    max-height: calc(90vh - 250px);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.attachment-content iframe {
+    width: 100%;
+    height: calc(90vh - 250px);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Loading spinner za priloge */
+.attachment-loading {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+}
+
+.attachment-loading i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
 /* Responsivnost za manjše zaslone */
 @media (max-width: 768px) {
     .stats-container {

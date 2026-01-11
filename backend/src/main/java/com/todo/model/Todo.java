@@ -69,8 +69,17 @@ public class Todo {
      * Slika naloge (opcijsko) - shranjena kot Base64 string
      * LONGTEXT za shranjevanje velikih slik
      */
+    @Lob
     @Column(name = "image", columnDefinition = "LONGTEXT")
     private String image;
+
+    /**
+     * PDF datoteka naloge (opcijsko) - shranjena kot Base64 string
+     * LONGTEXT za shranjevanje velikih PDF datotek
+     */
+    @Lob
+    @Column(name = "pdf", columnDefinition = "LONGTEXT")
+    private String pdf;
 
     // Konstruktorji
 
@@ -184,6 +193,15 @@ public class Todo {
 
     public void setImage(String image) {
         this.image = image;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public String getPdf() {
+        return pdf;
+    }
+
+    public void setPdf(String pdf) {
+        this.pdf = pdf;
         this.updatedAt = LocalDateTime.now();
     }
 
