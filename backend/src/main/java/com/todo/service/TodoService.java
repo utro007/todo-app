@@ -10,13 +10,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import com.todo.dto.ProductivityStatsDTO;
 
-
-
 /**
- Ta razred je vmes med kontrolerjem in repozitorijem
- V njem izvajamo:
- *  - validacije na nivoju aplikacije
- *  - pregled podatkov pred shranjevanjem
+ * Ta razred je vmes med kontrolerjem in repozitorijem
+ * V njem izvajamo:
+ * - validacije na nivoju aplikacije
+ * - pregled podatkov pred shranjevanjem
  *
  * Controller NE dostopa neposredno do baze → vedno uporablja ta Service sloj!!
  */
@@ -65,6 +63,7 @@ public class TodoService {
             existingTodo.setDeadline(todoDetails.getDeadline());
             existingTodo.setImage(todoDetails.getImage());
             existingTodo.setPdf(todoDetails.getPdf());
+            existingTodo.setDifficulty(todoDetails.getDifficulty());
 
             return todoRepository.save(existingTodo);
         }
@@ -131,7 +130,6 @@ public class TodoService {
         return todoRepository.findByDeadlineYearAndMonth(year, month);
     }
 
-
     public ProductivityStatsDTO getProductivityStats() {
 
         List<Todo> todos = todoRepository.findAll();
@@ -149,12 +147,9 @@ public class TodoService {
 
         if (completedTasks > 0) {
             averageDurationMinutes = completedTodos.stream()
-                    .mapToLong(t ->
-                            Duration.between(
-                                    t.getCreatedAt(),
-                                    t.getCompletedAt()
-                            ).toMinutes()
-                    )
+                    .mapToLong(t -> Duration.between(
+                            t.getCreatedAt(),
+                            t.getCompletedAt()).toMinutes())
                     .average()
                     .orElse(0);
         }
@@ -168,14 +163,12 @@ public class TodoService {
                 averageDurationMinutes,
                 completedPercentage,
                 totalTasks,
-                completedTasks
-        );
+                completedTasks);
     }
 
     public ProductivityStatsDTO getProductivityStatsByPeriod(
             LocalDateTime from,
-            LocalDateTime to
-    ) {
+            LocalDateTime to) {
 
         List<Todo> todos = todoRepository.findByCreatedAtBetween(from, to);
 
@@ -192,12 +185,9 @@ public class TodoService {
 
         if (completedTasks > 0) {
             averageDurationMinutes = completedTodos.stream()
-                    .mapToLong(t ->
-                            Duration.between(
-                                    t.getCreatedAt(),
-                                    t.getCompletedAt()
-                            ).toMinutes()
-                    )
+                    .mapToLong(t -> Duration.between(
+                            t.getCreatedAt(),
+                            t.getCompletedAt()).toMinutes())
                     .average()
                     .orElse(0);
         }
@@ -211,9 +201,7 @@ public class TodoService {
                 averageDurationMinutes,
                 completedPercentage,
                 totalTasks,
-                completedTasks
-        );
+                completedTasks);
     }
-
 
 }

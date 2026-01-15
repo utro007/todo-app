@@ -21,6 +21,7 @@ public class Todo {
 
     /**
      * Naslov naloge je obvezen
+     * 
      * @NotBlank zagotovi da ni prazen
      */
     @NotBlank(message = "Title is mandatory")
@@ -58,7 +59,6 @@ public class Todo {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-
     /**
      * Rok za dokončanje naloge (opcijsko)
      */
@@ -81,6 +81,19 @@ public class Todo {
     @Column(name = "pdf", columnDefinition = "LONGTEXT")
     private String pdf;
 
+    /**
+     * Težavnost naloge (EASY, MEDIUM, HARD)
+     */
+    public enum Difficulty {
+        EASY,
+        MEDIUM,
+        HARD
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty")
+    private Difficulty difficulty;
+
     // Konstruktorji
 
     public Todo() {
@@ -93,7 +106,6 @@ public class Todo {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
 
     /**
      * Klicano samodejno pred INSERT operacijo
@@ -112,9 +124,7 @@ public class Todo {
         this.updatedAt = LocalDateTime.now();
     }
 
-
     // Getterji in Setterji
-
 
     public Long getId() {
         return id;
@@ -160,7 +170,6 @@ public class Todo {
         return completedAt;
     }
 
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -202,6 +211,15 @@ public class Todo {
 
     public void setPdf(String pdf) {
         this.pdf = pdf;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
         this.updatedAt = LocalDateTime.now();
     }
 
