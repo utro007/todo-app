@@ -1,0 +1,12 @@
+USE todo_db;
+
+SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_SCHEMA = 'todo_db' 
+  AND TABLE_NAME = 'todos' 
+  AND COLUMN_NAME = 'difficulty';
+
+ALTER TABLE todos 
+ADD COLUMN IF NOT EXISTS difficulty VARCHAR(10) NULL;
+
+SELECT 'Difficulty column added successfully' as status;

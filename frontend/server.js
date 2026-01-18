@@ -199,10 +199,11 @@ app.get('/api/todos/:id', async (req, res) => {
 // Ustvari novo nalogo
 app.post('/api/todos', async (req, res) => {
     try {
-        const { title, description, completed = false, deadline, image, pdf } = req.body;
+        const { title, description, completed = false, deadline, image, pdf, difficulty } = req.body;
 
         console.log('Creating new todo:', {
             title,
+            difficulty,
             hasImage: !!image,
             hasPdf: !!pdf,
             deadline
@@ -213,8 +214,9 @@ app.post('/api/todos', async (req, res) => {
             description,
             completed,
             deadline,
-            image, // <-- NUJNO DODANO
-            pdf    // <-- NUJNO DODANO
+            difficulty, // forward difficulty
+            image,
+            pdf
         });
 
         res.status(201).json(response.data);
@@ -235,10 +237,11 @@ app.put('/api/todos/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const { title, description, completed, deadline, image, pdf } = req.body;
+        const { title, description, completed, deadline, image, pdf, difficulty } = req.body;
 
         console.log(`Updating todo ${id}:`, {
             title,
+            difficulty,
             completed,
             hasImage: !!image, // Izpiše true, če slika obstaja
             hasPdf: !!pdf      // Izpiše true, če PDF obstaja
@@ -249,6 +252,7 @@ app.put('/api/todos/:id', async (req, res) => {
             description,
             completed,
             deadline,
+            difficulty, // forward difficulty
             image, // <-- NUJNO: pošljemo sliko
             pdf    // <-- NUJNO: pošljemo PDF
         });

@@ -11,6 +11,7 @@ const todoForm = document.getElementById('todoForm');
 const todoTitle = document.getElementById('todoTitle');
 const todoDescription = document.getElementById('todoDescription');
 const todoDeadline = document.getElementById('todoDeadline');
+const todoDifficulty = document.getElementById('todoDifficulty');
 const submitBtn = document.getElementById('submitBtn');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const todosList = document.getElementById('todosList');
@@ -82,6 +83,8 @@ async function loadTodos() {
         }
     } catch (error) {
         showError('Napaka pri nalaganju nalog: ' + error.message);
+    } finally {
+        hideLoading(); // Vedno skrij loading indikator na koncu
     }
 }
 
@@ -137,6 +140,22 @@ function displayTodos() {
             </div>
         ` : '';
 
+        // TEŽAVNOST: Prikaži oznako težavnosti
+        let difficultyDisplay = '';
+        if (todo.difficulty) {
+            const difficultyLabels = {
+                'EASY': { label: 'Lahka', class: 'difficulty-easy' },
+                'MEDIUM': { label: 'Srednja', class: 'difficulty-medium' },
+                'HARD': { label: 'Težka', class: 'difficulty-hard' }
+            };
+            const difficultyInfo = difficultyLabels[todo.difficulty] || { label: todo.difficulty, class: '' };
+            difficultyDisplay = `
+                <div class="todo-difficulty ${difficultyInfo.class}">
+                    <i class="fas fa-signal"></i> ${difficultyInfo.label}
+                </div>
+            `;
+        }
+
         // PRILOGE: Preverimo, kateri stolpec v bazi ima podatke
         let attachmentHtml = '';
         if (todo.image) {
@@ -161,6 +180,7 @@ function displayTodos() {
                     <div class="todo-title">${escapeHtml(todo.title)}</div>
                     ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
                     ${deadlineDisplay}
+                    ${difficultyDisplay}
                     ${attachmentHtml} <div class="todo-meta">
                         <span><i class="far fa-calendar-plus"></i> ${new Date(todo.createdAt).toLocaleDateString('sl-SI')}</span>
                     </div>
@@ -170,7 +190,7 @@ function displayTodos() {
                     <button class="btn-icon btn-edit" onclick="editTodo(${todo.id})">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn-icon btn-delete" onclick="confirmDelete(${todo.id})">
+                    <button class="btn-icon btn-delete" onclick="showDeleteModal(${todo.id})">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -219,10 +239,15 @@ async function handleSubmit(event) {
         if (loading) loading.style.display = 'block';
 
         // Priprava podatkov
+        const difficultyValue = todoDifficulty ? todoDifficulty.value : '';
+        console.log("DEBUG Frontend: difficultyValue from select:", difficultyValue);
+        const difficulty = difficultyValue && difficultyValue.trim() !== '' ? difficultyValue : null;
+        console.log("DEBUG Frontend: difficulty after processing:", difficulty);
         const todoData = {
             title,
             description,
             deadline: deadline,
+            difficulty: difficulty, // Vedno vključimo difficulty, tudi če je null
             image: null,
             pdf: null
         };
@@ -243,7 +268,9 @@ async function handleSubmit(event) {
         console.log("Pošiljam podatke:", todoData);
 
         if (editingId) {
-            todoData.completed = todos.find(t => t.id === editingId)?.completed || false;
+            const existingTodo = todos.find(t => t.id === editingId);
+            todoData.completed = existingTodo?.completed || false;
+            // Difficulty je že nastavljen v todoData objektu zgoraj
             await apiCall(`${API_BASE}/${editingId}`, {
                 method: 'PUT',
                 body: JSON.stringify(todoData)
@@ -296,6 +323,9 @@ function editTodo(id) {
     } else {
         todoDeadline.value = '';
     }
+
+    // Nastavi težavnost
+    todoDifficulty.value = todo.difficulty || '';
 
     submitBtn.innerHTML = '<i class="fas fa-save"></i> Shrani spremembe';
     cancelEditBtn.style.display = 'flex';

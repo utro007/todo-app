@@ -356,6 +356,49 @@ body {
     color: #dc2626;
 }
 
+.todo-difficulty {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.todo-difficulty i {
+    font-size: 12px;
+}
+
+.todo-difficulty.difficulty-easy {
+    color: #10b981;
+    background: #d1fae5;
+}
+
+.todo-difficulty.difficulty-easy i {
+    color: #10b981;
+}
+
+.todo-difficulty.difficulty-medium {
+    color: #f59e0b;
+    background: #fef3c7;
+}
+
+.todo-difficulty.difficulty-medium i {
+    color: #f59e0b;
+}
+
+.todo-difficulty.difficulty-hard {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+.todo-difficulty.difficulty-hard i {
+    color: #ef4444;
+}
+
 .todo-meta {
     margin-top: 10px;
     font-size: 12px;
